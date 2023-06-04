@@ -1,0 +1,66 @@
+.master {
+    /* Common styles here */
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+    /* ... */
+}
+
+.buttonOne {
+    /* Styles for buttonOne */
+    -fx-border-color: rgba(100, 100, 100, 1);
+    -fx-border-width: 0px;
+    -fx-border-radius: 16px;
+    -fx-translate-x: 0px;
+    -fx-translate-y: 0px;
+    -fx-background-color: rgba(32, 0, 240, 0.5);
+    -fx-background-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 0px, 0px, 0px, 65px, 18px);
+    /* Additional styles specific to buttonOne */
+    -fx-font: 44px "Brush Script";
+    -fx-letter-spacing: 0px;
+}
+
+.tab-pane {
+    -fx-background-color: #F0F0F0;
+    -fx-tab-background-color: #CCCCCC;
+}
+
+.tab-pane .tab-header-area {
+    -fx-background-color: #DDDDDD;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #DDDDDD;
+    -fx-border-color: #999999;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-text-fill: #333333;
+}
+
+.tab-pane .tab:selected:focused .focus-indicator {
+    -fx-border-color: transparent;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #333333;
+}
+.tab-pane .tab:selected:pressed {
+    -fx-background-color: rgba(204, 204, 204, 0.8);
+}
+
+
+.tab-pane .tab-header-background {
+    -fx-background-color: #007AFF;
+}
+
+
+.tab-pane .tab:hover {
+    -fx-background-color: #EEEEEE;
+}
+
+.tab-pane .tab .tab-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
