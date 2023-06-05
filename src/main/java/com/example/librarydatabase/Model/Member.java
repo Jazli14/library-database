@@ -5,6 +5,7 @@ import java.io.Serializable;
 public abstract class Member implements Serializable {
     private final String username;
     private final String password;
+    private boolean isAdminRole;
 
     public Member(String username, String password){
         this.username = username;
@@ -17,5 +18,13 @@ public abstract class Member implements Serializable {
     public boolean validPassword(String password) {
         return this.password.equals(password);
     }
+
+    protected void setAdmin(boolean adminOrUser) {
+        this.isAdminRole = adminOrUser;
+    }
+    public boolean getRole(){
+        return isAdminRole;
+    }
+
 
 }

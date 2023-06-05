@@ -23,7 +23,11 @@ public class LoginController implements Initializable {
     @FXML
     private TextField userName;
     @FXML
-    private PasswordField passWord;
+    private PasswordField userPass;
+    @FXML
+    private TextField adminName;
+    @FXML
+    private PasswordField adminPass;
     @FXML
     private Button userConfirm;
     @FXML
@@ -38,12 +42,6 @@ public class LoginController implements Initializable {
     private Stage stage;
 
     Authenticator auth;
-
-    private AppController appController;
-
-    public void setAppController(AppController appController) {
-        this.appController = appController;
-    }
 
 
     @FXML
@@ -62,39 +60,52 @@ public class LoginController implements Initializable {
     }
     @FXML
     private void handleLogin() throws IOException {
-        String username = userName.getText();
-        String password = passWord.getText();
-        boolean loginSuccess = auth.processLogin(username, password);
+        boolean loginSuccess;
 
         try {
-            if (loginSuccess && currentTab.equals(userTab)) {
+            if (currentTab.equals(userTab)) {
+                String username = userName.getText();
+                String password = userPass.getText();
+                loginSuccess = auth.processLogin(username, password, false);
 
-                // Load User Scene
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/user_scene.fxml"));
-                Parent root = loader.load();
+                if (loginSuccess){
+                    // Load User Scene
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/user_scene.fxml"));
+                    Parent root = loader.load();
 
-                UserSceneController userController = loader.getController();
-                userController.setStage(stage);
+                    UserSceneController userController = loader.getController();
+                    userController.setStage(stage);
 
-                Scene scene = new Scene(root);
-                stage.setScene(scene);
-                stage.setTitle("User View");
-                stage.show();
-            } else if (loginSuccess && currentTab.equals(adminTab)) {
-                // Load Admin Scene
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/admin_scene.fxml"));
-                Parent root = loader.load();
+                    Scene scene = new Scene(root);
+                    stage.setScene(scene);
+                    stage.setTitle("User View");
+                    stage.show();
+                } else {
+                    System.out.println("Login failed");
+                }
 
-                AdminSceneController adminController = loader.getController();
-                adminController.setStage(stage);
+            } else if (currentTab.equals(adminTab)) {
+                String username = adminName.getText();
+                String password = adminPass.getText();
+                loginSuccess = auth.processLogin(username, password, true);
 
-                Scene scene = new Scene(root);
-                stage.setScene(scene);
-                stage.setTitle("Admin View");
-                stage.show();
-            }
-            else if (!loginSuccess){
-                System.out.println("Try again");
+
+                if (loginSuccess){
+                    // Load Admin Scene
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/admin_scene.fxml"));
+                    Parent root = loader.load();
+
+                    AdminSceneController adminController = loader.getController();
+                    adminController.setStage(stage);
+
+                    Scene scene = new Scene(root);
+                    stage.setScene(scene);
+                    stage.setTitle("Admin View");
+                    stage.show();
+                } else {
+                    System.out.println("Login failed");
+                }
+
             }
 
         } catch (Exception e) {
@@ -104,15 +115,18 @@ public class LoginController implements Initializable {
 
     @FXML
     private void handleRegister() throws IOException {
-        String username = userName.getText();
-        String password = passWord.getText();
+
         boolean isValidRegistration = false;
 
         try {
             if (currentTab.equals(userTab)) {
+                String username = userName.getText();
+                String password = userPass.getText();
                 isValidRegistration = auth.processRegistration(username, password, false);
             }
             else if (currentTab.equals(adminTab)){
+                String username = adminName.getText();
+                String password = adminPass.getText();
                 isValidRegistration = auth.processRegistration(username, password, true);
             }
 

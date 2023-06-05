@@ -34,7 +34,7 @@
                      <RowConstraints maxHeight="57.800024414062506" minHeight="10.0" prefHeight="57.800024414062506" vgrow="SOMETIMES" />
                  </rowConstraints>
                   <children>
-                     <PasswordField fx:id="passWord" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <PasswordField fx:id="userPass" GridPane.columnIndex="1" GridPane.rowIndex="2">
                         <GridPane.margin>
                            <Insets />
                         </GridPane.margin>
@@ -111,12 +111,12 @@
                            <Insets right="20.0" />
                         </padding>
                      </Label>
-                     <TextField prefHeight="26.0" prefWidth="268.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <TextField fx:id="adminName" prefHeight="26.0" prefWidth="268.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                         <GridPane.margin>
                            <Insets />
                         </GridPane.margin>
                      </TextField>
-                     <PasswordField GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <PasswordField fx:id="adminPass" GridPane.columnIndex="1" GridPane.rowIndex="2">
                         <GridPane.margin>
                            <Insets />
                         </GridPane.margin>
