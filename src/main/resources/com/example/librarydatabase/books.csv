@@ -1,4 +1,4 @@
-book_id,title,authors,average_rating,  num_pages,publication_date,
+bookID,title,authors,rating,num_pages,publication_date,
 1,Harry Potter and the Half-Blood Prince (Harry Potter  #6),J.K. Rowling/Mary GrandPré,4.57,652,9/16/2006,
 2,Harry Potter and the Order of the Phoenix (Harry Potter  #5),J.K. Rowling/Mary GrandPré,4.49,870,9/1/2004,
 3,Harry Potter and the Chamber of Secrets (Harry Potter  #2),J.K. Rowling,4.42,352,11/1/2003,
