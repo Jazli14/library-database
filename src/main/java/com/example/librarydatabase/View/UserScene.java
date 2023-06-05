@@ -1,7 +1,6 @@
 package com.example.librarydatabase.View;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.*;
 import javafx.stage.*;
 import javafx.scene.control.*;
 import java.io.IOException;
@@ -17,16 +16,11 @@ public class UserScene {
     }
     public void handleLogOut() throws IOException {
         // Load Login Scene
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/login_scene.fxml"));
-        Parent root = loader.load();
-
-        LoginScene loginScene = loader.getController();
+        FXMLLoader newLoader = SceneUtils.loadScene(stage, "/com/example/librarydatabase/login_scene.fxml",
+                "Login To The Library Database");
+        LoginScene loginScene = newLoader.getController();
         loginScene.setStage(stage);
 
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Login To The Library Database");
-        stage.show();
     }
 
 }

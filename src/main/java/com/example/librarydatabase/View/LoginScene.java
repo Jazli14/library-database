@@ -2,11 +2,11 @@ package com.example.librarydatabase.View;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.example.librarydatabase.Authenticator;
+import com.example.librarydatabase.Controller.Authenticator;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.*;
+
 import javafx.scene.control.*;
 import javafx.stage.*;
 
@@ -70,16 +70,11 @@ public class LoginScene implements Initializable {
 
                 if (loginSuccess){
                     // Load User Scene
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/user_scene.fxml"));
-                    Parent root = loader.load();
+                    FXMLLoader newLoader = SceneUtils.loadScene(stage, "/com/example/librarydatabase/user_scene.fxml",
+                            "User View");
+                    UserScene userScene = newLoader.getController();
+                    userScene.setStage(stage);
 
-                    UserScene userController = loader.getController();
-                    userController.setStage(stage);
-
-                    Scene scene = new Scene(root);
-                    stage.setScene(scene);
-                    stage.setTitle("User View");
-                    stage.show();
                 } else {
                     System.out.println("Login failed");
                 }
@@ -92,16 +87,11 @@ public class LoginScene implements Initializable {
 
                 if (loginSuccess){
                     // Load Admin Scene
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/admin_scene.fxml"));
-                    Parent root = loader.load();
+                    FXMLLoader newLoader = SceneUtils.loadScene(stage,"/com/example/librarydatabase/admin_scene.fxml",
+                            "Admin View");
+                    AdminScene adminScene = newLoader.getController();
+                    adminScene.setStage(stage);
 
-                    AdminScene adminController = loader.getController();
-                    adminController.setStage(stage);
-
-                    Scene scene = new Scene(root);
-                    stage.setScene(scene);
-                    stage.setTitle("Admin View");
-                    stage.show();
                 } else {
                     System.out.println("Login failed");
                 }
