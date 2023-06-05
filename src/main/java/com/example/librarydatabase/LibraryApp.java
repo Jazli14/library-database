@@ -1,6 +1,6 @@
 package com.example.librarydatabase;
 
-import com.example.librarydatabase.Controller.LoginController;
+import com.example.librarydatabase.View.LoginScene;
 import javafx.application.Application;
 import javafx.fxml.*;
 import javafx.scene.*;
@@ -17,8 +17,8 @@ public class LibraryApp extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 700, 350);
 
         // Create Login Scene Controller
-        LoginController loginController = fxmlLoader.getController();
-        loginController.setStage(stage);
+        LoginScene loginScene = fxmlLoader.getController();
+        loginScene.setStage(stage);
 
         stage.setTitle("Login To The Library Database");
         stage.setScene(scene);

@@ -1,4 +1,4 @@
-package com.example.librarydatabase.Controller;
+package com.example.librarydatabase.View;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -13,7 +13,7 @@ import javafx.stage.*;
 
 import java.io.IOException;
 
-public class LoginController implements Initializable {
+public class LoginScene implements Initializable {
     @FXML
     private TabPane tabPane;
     @FXML
@@ -49,7 +49,7 @@ public class LoginController implements Initializable {
         this.stage = stage;
     }
 
-    public LoginController(){
+    public LoginScene(){
         auth = new Authenticator();
     }
 
@@ -73,7 +73,7 @@ public class LoginController implements Initializable {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/user_scene.fxml"));
                     Parent root = loader.load();
 
-                    UserSceneController userController = loader.getController();
+                    UserScene userController = loader.getController();
                     userController.setStage(stage);
 
                     Scene scene = new Scene(root);
@@ -95,7 +95,7 @@ public class LoginController implements Initializable {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/admin_scene.fxml"));
                     Parent root = loader.load();
 
-                    AdminSceneController adminController = loader.getController();
+                    AdminScene adminController = loader.getController();
                     adminController.setStage(stage);
 
                     Scene scene = new Scene(root);

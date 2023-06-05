@@ -2,7 +2,10 @@ package com.example.librarydatabase;
 
 import com.example.librarydatabase.Model.*;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.*;
+import java.util.Properties;
 
 
 public class Authenticator {
@@ -59,11 +62,7 @@ public class Authenticator {
             System.out.println(e.getMessage());
         }
 
-        String url = "jdbc:postgresql://ruby.db.elephantsql.com/agclswdr";
-        String username = "agclswdr";
-        String password = "JhvkCaxHwI44WdwbFtNo3GMpyg66xwVR";
-
-        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+        try (Connection connection = establishConnection()) {
             String selectSQL = "SELECT username, password, admin FROM accounts";
             try (PreparedStatement statement = connection.prepareStatement(selectSQL)) {
                 try (ResultSet resultSet = statement.executeQuery()) {
@@ -82,7 +81,7 @@ public class Authenticator {
                     }
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -94,10 +93,7 @@ public class Authenticator {
             System.out.println(e.getMessage());
         }
 
-        String url = "jdbc:postgresql://ruby.db.elephantsql.com/agclswdr";
-        String dbUsername = "agclswdr";
-        String dbPassword = "JhvkCaxHwI44WdwbFtNo3GMpyg66xwVR";
-        try (Connection connection = DriverManager.getConnection(url, dbUsername, dbPassword)) {
+        try (Connection connection = establishConnection()) {
 
             String insertSQL = "INSERT INTO accounts (username, password, admin) VALUES (?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(insertSQL)) {
@@ -107,11 +103,23 @@ public class Authenticator {
                 statement.executeUpdate();
 
             }
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
                 e.printStackTrace();
         }
+    }
 
-}
+    private static Connection establishConnection() throws IOException, SQLException {
+        Properties props = new Properties();
+        try (FileInputStream fis = new FileInputStream("config.properties")) {
+            props.load(fis);
+        }
+
+        String url = props.getProperty("dbUrl");
+        String username = props.getProperty("dbUsername");
+        String password = props.getProperty("dbPassword");
+
+        return DriverManager.getConnection(url, username, password);
+    }
 
 
 }
