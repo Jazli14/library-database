@@ -142,6 +142,8 @@ public class UserScene implements Initializable {
 
         boolean returnSuccess = userController.processReturn(selectedLoan.getLoanID());
         if (returnSuccess){
+            populateTableView(true);
+            populateTableView(false);
             System.out.println("yes");
         }
         else {

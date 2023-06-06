@@ -1,15 +1,19 @@
 package com.example.librarydatabase.Model;
 
+import com.example.librarydatabase.Controller.UserController;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class Library {
     private Map<Integer, Book> books;
     private Map<Integer, Loan> loans;
+    public UserController userController;   // mm
 
-    public Library(){
+    public Library(UserController userController){
         books = new HashMap<>();
         loans = new HashMap<>();
+        this.userController = userController;
     }
     public void addBook(Book book) {
         books.put(book.getBookID(), book);

@@ -16,6 +16,7 @@ public class User extends Member {
                 Loan newLoan = new Loan(library, book.getBookID(), book.getTitle(), getUsername(),
                         borrowDate, returnDate, false);
                 library.addLoan(newLoan);
+                library.userController.updateLoans(newLoan,true);
                 System.out.println("Borrowing book: " + book.getTitle());
                 return true;
             }
