@@ -54,8 +54,8 @@ public class UserController extends Controller {
         try (Connection connection = establishConnection()) {
             String selectBooks = "SELECT available2.book_id, available2.title, available2.authors, available2.rating, " +
                     "available2.num_pages, available2.year, available2.ready FROM available2";
-            String selectLoans = "SELECT loans.loan_id, loans.book_id, loans.borrower, loans.borrow_date, " +
-                    "loans.return_date, loans.overdue FROM loans";
+            String selectLoans = "SELECT loans2.loan_id, loans2.book_id, loans2.title, loans2.borrower, loans2.borrow_date, " +
+                    "loans2.return_date, loans2.overdue FROM loans2";
             try (PreparedStatement statement = connection.prepareStatement(selectBooks)) {
                 try (ResultSet booksResultSet = statement.executeQuery()) {
                     while (booksResultSet.next()) {
@@ -80,11 +80,14 @@ public class UserController extends Controller {
                         int loanID = loansResultSet.getInt("loan_id");
                         int bookID = loansResultSet.getInt("book_id");
                         String username = loansResultSet.getString("borrower");
+                        String title = loansResultSet.getString("title");
                         Date borrowDate = loansResultSet.getDate("borrow_date");
                         Date returnDate = loansResultSet.getDate("return_date");
                         boolean overdueStatus = loansResultSet.getBoolean("overdue");
 
-                        Loan newLoan = new Loan(loanID, bookID, username, borrowDate, returnDate, overdueStatus);
+
+                        Loan newLoan = new Loan(loanID, bookID, title,
+                                username, borrowDate, returnDate, overdueStatus);
                         library.addLoan(newLoan);
                     }
                 }

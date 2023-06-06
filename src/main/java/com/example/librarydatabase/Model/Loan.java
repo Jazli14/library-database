@@ -8,23 +8,26 @@ import java.util.Random;
 public class Loan {
     private int loanID;
     private int bookID;
+    private String title;
     private String username;
     private Date borrowDate;
     private Date returnDate;
     private boolean isOverdue;
 
-    public Loan(Library library, int bookID, String username, Date borrowDate, Date returnDate, boolean overdueStatus) {
+    public Loan(Library library, int bookID, String title, String username, Date borrowDate, Date returnDate, boolean overdueStatus) {
         this.loanID = generateLoanID(library);
         this.bookID = bookID;
+        this.title = title;
         this.username = username;
         this.borrowDate = borrowDate;
         this.returnDate = returnDate;
         this.isOverdue = overdueStatus;
     }
 
-    public Loan(int loanID, int bookID, String username, Date borrowDate, Date returnDate, boolean overdueStatus) {
+    public Loan(int loanID, int bookID, String title, String username, Date borrowDate, Date returnDate, boolean overdueStatus) {
         this.loanID = loanID;
         this.bookID = bookID;
+        this.title = title;
         this.username = username;
         this.borrowDate = borrowDate;
         this.returnDate = returnDate;
@@ -38,6 +41,9 @@ public class Loan {
 
     public int getBookID() {
         return bookID;
+    }
+    public String getTitle(){
+        return title;
     }
 
     public String getUsername() {
@@ -70,7 +76,7 @@ public class Loan {
         this.returnDate = returnDate;
     }
 
-    public boolean isOverdue() {
+    public boolean getIsOverdue() {
         return isOverdue;
     }
 

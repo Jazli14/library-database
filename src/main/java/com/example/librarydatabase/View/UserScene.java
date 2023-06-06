@@ -43,6 +43,19 @@ public class UserScene implements Initializable {
     @FXML
     private DatePicker borrowDatePicker;
 
+    @FXML
+    private TableView<Loan> loanTable;
+    @FXML
+    private TableColumn<Loan, String> loanTitle;
+    @FXML
+    private TableColumn<Loan, Date> loanBorrow;
+    @FXML
+    private TableColumn<Loan, Date> loanReturn;
+    @FXML
+    private TableColumn<Loan, Boolean> loanOverdue;
+
+
+
     private final UserController userController;
 
     private Stage stage;
@@ -74,13 +87,14 @@ public class UserScene implements Initializable {
 
                 System.out.println("Successfully loaned " + selectedBook.getTitle() + " by " +
                         selectedBook.getAuthor() + " for " + startDateString + " to " + endDateString);
+
+                populateTableView(true);
+                populateTableView(false);
             }
         }
         else {
             System.out.println("You need to select a book, borrow date and return date");
         }
-
-
 
 
     }
@@ -94,18 +108,47 @@ public class UserScene implements Initializable {
         searchYear.setCellValueFactory(new PropertyValueFactory<>("year"));
         searchAvailability.setCellValueFactory(new PropertyValueFactory<>("availability"));
 
+        loanTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
+        loanBorrow.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
+        loanReturn.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
+        loanOverdue.setCellValueFactory(new PropertyValueFactory<>("isOverdue"));
+
         // Populate the TableView with data from the book HashMap
-        populateTableView();
+        populateTableView(true);
+        populateTableView(false);
 
     }
 
-    private void populateTableView() {
-        ObservableList<Book> bookList = FXCollections.observableArrayList();
-        bookList.addAll(userController.library.getBooks().values());
-        searchTable.setItems(bookList);
+    private void populateTableView(boolean bookOrLoan) {
+        if (bookOrLoan){
+            ObservableList<Book> bookList = FXCollections.observableArrayList();
+            bookList.addAll(userController.library.getBooks().values());
+            searchTable.setItems(bookList);
+            searchTable.refresh();
+        }
+        else {
+            ObservableList<Loan> loanList = FXCollections.observableArrayList();
+            loanList.addAll(userController.library.getLoans().values());
+            loanTable.setItems(loanList);
+            loanTable.refresh();
+        }
+
     }
     @FXML
     public void handleReturn() {
+        populateTableView(false);
+        populateTableView(true);
+        Loan selectedLoan = loanTable.getSelectionModel().getSelectedItem();
+
+        boolean returnSuccess = userController.processReturn(selectedLoan.getLoanID());
+        if (returnSuccess){
+            System.out.println("yes");
+        }
+        else {
+            System.out.println("NOOOOO");
+        }
+
+
 
     }
     public void setStage(Stage stage) {

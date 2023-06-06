@@ -13,7 +13,8 @@ public class User extends Member {
         if (book.getAvailability()) {
             if (isValidDate(borrowDate, returnDate)){
                 book.setAvailability(false);
-                Loan newLoan = new Loan(library, book.getBookID(), getUsername(), borrowDate, returnDate, false);
+                Loan newLoan = new Loan(library, book.getBookID(), book.getTitle(), getUsername(),
+                        borrowDate, returnDate, false);
                 library.addLoan(newLoan);
                 System.out.println("Borrowing book: " + book.getTitle());
                 return true;
@@ -41,7 +42,6 @@ public class User extends Member {
         }
 
     }
-
 
     private boolean isValidDate(Date borrowDate, Date returnDate){
         int comparisonResult = borrowDate.compareTo(returnDate);

@@ -67,12 +67,12 @@
          <content>
             <BorderPane prefHeight="200.0" prefWidth="200.0">
                <center>
-                  <TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                  <TableView fx:id="loanTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                     <columns>
-                      <TableColumn prefWidth="75.0" text="Title" />
-                      <TableColumn prefWidth="75.0" text="Borrow Date" />
-                        <TableColumn prefWidth="75.0" text="Return Date" />
-                        <TableColumn prefWidth="75.0" text="Overdue?" />
+                      <TableColumn fx:id="loanTitle" prefWidth="75.0" text="Title" />
+                      <TableColumn fx:id="loanBorrow" prefWidth="75.0" text="Borrow Date" />
+                        <TableColumn fx:id="loanReturn" prefWidth="75.0" text="Return Date" />
+                        <TableColumn fx:id="loanOverdue" prefWidth="75.0" text="Overdue?" />
                     </columns>
                   </TableView>
                </center>
