@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.Properties;
 
 
-public class Authenticator implements Login{
+public class Authenticator extends Controller implements Login {
     private AccountList accList;
     public Authenticator(){
         // Want to initialize the AccountList to the one on the server, not a blank one
@@ -32,6 +32,10 @@ public class Authenticator implements Login{
             System.out.println("NO ONE'S NAMED THAT DUMMY");
             return false;
         }
+    }
+
+    public AccountList getAccList(){
+        return accList;
     }
     public boolean processRegistration(String username, String password, boolean isAdmin){
         boolean isValid = !accList.memberExists(username) && !(username.isEmpty() || password.isEmpty());
@@ -109,19 +113,19 @@ public class Authenticator implements Login{
         }
     }
 
-    private static Connection establishConnection() throws IOException, SQLException {
-        Properties props = new Properties();
-        try (FileInputStream fis = new FileInputStream(
-                "src/main/java/com/example/librarydatabase/Controller/config.properties")) {
-            props.load(fis);
-        }
-
-        String url = props.getProperty("dbUrl");
-        String username = props.getProperty("dbUsername");
-        String password = props.getProperty("dbPassword");
-
-        return DriverManager.getConnection(url, username, password);
-    }
+//    private static Connection establishConnection() throws IOException, SQLException {
+//        Properties props = new Properties();
+//        try (FileInputStream fis = new FileInputStream(
+//                "src/main/java/com/example/librarydatabase/Controller/config.properties")) {
+//            props.load(fis);
+//        }
+//
+//        String url = props.getProperty("dbUrl");
+//        String username = props.getProperty("dbUsername");
+//        String password = props.getProperty("dbPassword");
+//
+//        return DriverManager.getConnection(url, username, password);
+//    }
 
 
 }

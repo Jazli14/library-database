@@ -11,4 +11,5 @@ module com.example.librarydatabase {
     opens com.example.librarydatabase.View to javafx.fxml;
     exports com.example.librarydatabase.Controller;
     opens com.example.librarydatabase.Controller to javafx.fxml;
+    exports com.example.librarydatabase.Model;
 }

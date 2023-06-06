@@ -3,6 +3,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.example.librarydatabase.Controller.Authenticator;
+import com.example.librarydatabase.Model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -74,6 +75,7 @@ public class LoginScene implements Initializable {
                             "User View");
                     UserScene userScene = newLoader.getController();
                     userScene.setStage(stage);
+                    userScene.initializeController(auth.getAccList(), username);
 
                 } else {
                     System.out.println("Login failed");
