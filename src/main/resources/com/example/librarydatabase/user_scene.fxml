@@ -22,7 +22,7 @@
                <top>
                   <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                      <children>
-                        <TextField fx:id="searchField" promptText="Find a book..." />
+                        <TextField fx:id="searchField" promptText="Find a book..." onAction="#handleSearch"/>
                      </children>
                   </HBox>
                </top>

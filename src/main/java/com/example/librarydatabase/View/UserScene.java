@@ -145,10 +145,15 @@ public class UserScene implements Initializable {
         else {
             System.out.println("NOOOOO");
         }
-
-
-
     }
+
+    @FXML
+    public void handleSearch() {
+        String book = searchField.getText();
+        userController.search(book);
+        populateTableView(true);
+    }
+
     public void setStage(Stage stage) {
         this.stage = stage;
     }

@@ -39,8 +39,42 @@ public class UserController extends Controller {
         else {
             return false;
         }
+    }
 
+    public void search(String book){
+        try {
+            Class.forName("org.postgresql.Driver");
+        }
+        catch (java.lang.ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
 
+        String selectBooks = "SELECT available2.book_id, available2.title, available2.authors, available2.rating, available2.num_pages, available2.year, available2.ready FROM available2" +
+                "WHERE name LIKE ?";
+        try (Connection connection = establishConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(selectBooks)) {
+                statement.setString(1, "%" + book + "%");
+                try (ResultSet booksResultSet = statement.executeQuery()) {
+                    while (booksResultSet.next()) {
+                        int bookID = booksResultSet.getInt("book_id");
+                        String bookTitle = booksResultSet.getString("title");
+                        String bookAuthor = booksResultSet.getString("authors");
+                        double bookRating = booksResultSet.getDouble("rating");
+                        int bookPages = booksResultSet.getInt("num_pages");
+                        int bookYear = booksResultSet.getInt("year");
+                        boolean availability = booksResultSet.getBoolean("ready");
+
+                    }
+                    // Close the resources
+                    booksResultSet.close();
+                    statement.close();
+                    connection.close();
+                }
+            }
+        }
+        catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void populateLibrary(User client){
