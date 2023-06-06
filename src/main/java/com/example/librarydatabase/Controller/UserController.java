@@ -12,7 +12,6 @@ public class UserController extends Controller {
 
     public UserController(){
         library = new Library(this);
-        populateLibrary();
     }
     public boolean processBorrow(int bookID, Date borrowDate, Date returnDate) {
         boolean borrowSuccess = client.borrowBook(bookID, library, borrowDate, returnDate);
@@ -44,7 +43,7 @@ public class UserController extends Controller {
 
     }
 
-    private void populateLibrary(){
+    public void populateLibrary(User client){
         try {
             Class.forName("org.postgresql.Driver");
         }
@@ -55,8 +54,9 @@ public class UserController extends Controller {
         try (Connection connection = establishConnection()) {
             String selectBooks = "SELECT available2.book_id, available2.title, available2.authors, available2.rating, " +
                     "available2.num_pages, available2.year, available2.ready FROM available2";
-            String selectLoans = "SELECT loans2.loan_id, loans2.book_id, loans2.title, loans2.borrower, loans2.borrow_date, " +
-                    "loans2.return_date, loans2.overdue FROM loans2";
+            String selectLoans = "SELECT loan_id, book_id, title, borrower, borrow_date, return_date, overdue " +
+                    "FROM loans2 WHERE borrower = ?";
+
             try (PreparedStatement statement = connection.prepareStatement(selectBooks)) {
                 try (ResultSet booksResultSet = statement.executeQuery()) {
                     while (booksResultSet.next()) {
@@ -76,6 +76,7 @@ public class UserController extends Controller {
                 }
 
             try (PreparedStatement statement = connection.prepareStatement(selectLoans)) {
+                statement.setString(1, client.getUsername());
                 try (ResultSet loansResultSet = statement.executeQuery()) {
                     while (loansResultSet.next()) {
                         int loanID = loansResultSet.getInt("loan_id");

@@ -54,8 +54,6 @@ public class UserScene implements Initializable {
     @FXML
     private TableColumn<Loan, Boolean> loanOverdue;
 
-
-
     private final UserController userController;
 
     private Stage stage;
@@ -114,8 +112,6 @@ public class UserScene implements Initializable {
         loanOverdue.setCellValueFactory(new PropertyValueFactory<>("isOverdue"));
 
         // Populate the TableView with data from the book HashMap
-        populateTableView(true);
-        populateTableView(false);
 
     }
 
@@ -165,9 +161,13 @@ public class UserScene implements Initializable {
         loginScene.setStage(stage);
 
     }
-    public void initializeController(AccountList accList, String username){
+    public void initializeControllerThenPopulate(AccountList accList, String username){
         userController.setUser(accList, username);
+        userController.populateLibrary((User) accList.getMember(username));
+        populateTableView(true);
+        populateTableView(false);
     }
+
 
 }
 
