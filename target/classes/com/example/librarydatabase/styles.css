@@ -5,6 +5,14 @@
     /* ... */
 }
 
+.table-view .column-header .label {
+    -fx-font-size: 16px;
+}
+
+.table-view .table.cell {
+    -fx-font-size: 14px;
+}
+
 .buttonOne {
     /* Styles for buttonOne */
     -fx-border-color: rgba(100, 100, 100, 1);

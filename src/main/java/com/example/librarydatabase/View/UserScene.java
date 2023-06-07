@@ -1,8 +1,6 @@
 package com.example.librarydatabase.View;
 import com.example.librarydatabase.Controller.*;
 import com.example.librarydatabase.Model.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -17,7 +15,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
-public class UserScene implements Initializable {
+public class UserScene extends Scene implements Initializable {
     @FXML
     private TableView<Book> searchTable;
     @FXML
@@ -53,7 +51,20 @@ public class UserScene implements Initializable {
     private TableColumn<Loan, Date> loanReturn;
     @FXML
     private TableColumn<Loan, Boolean> loanOverdue;
-
+    @FXML
+    private RadioButton minRadio;
+    @FXML
+    private RadioButton maxRadio;
+    @FXML
+    private ToggleGroup MinMax;
+    @FXML
+    private Slider ratingSlider;
+    @FXML
+    private ComboBox<String> pageCombo;
+    @FXML
+    private Spinner<Integer> yearSpinner;
+    @FXML
+    private CheckBox availableCheck;
     private final UserController userController;
 
     private Stage stage;
@@ -86,8 +97,8 @@ public class UserScene implements Initializable {
                 System.out.println("Successfully loaned " + selectedBook.getTitle() + " by " +
                         selectedBook.getAuthor() + " for " + startDateString + " to " + endDateString);
 
-                populateTableView(true);
-                populateTableView(false);
+                populateTableView(true, searchTable, userController, searchTitle);
+                populateTableView(false, loanTable, userController, loanTitle);
             }
         }
         else {
@@ -111,43 +122,23 @@ public class UserScene implements Initializable {
         loanReturn.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
         loanOverdue.setCellValueFactory(new PropertyValueFactory<>("isOverdue"));
 
-        // Populate the TableView with data from the book HashMap
-
     }
 
-    private void populateTableView(boolean bookOrLoan) {
-        if (bookOrLoan){
-            ObservableList<Book> bookList = FXCollections.observableArrayList();
-            bookList.addAll(userController.library.getBooks().values());
-            searchTable.setItems(bookList);
-            searchTable.refresh();
-        }
-        else {
-            ObservableList<Loan> loanList = FXCollections.observableArrayList();
-            loanList.addAll(userController.library.getLoans().values());
-            loanTable.setItems(loanList);
-            loanTable.refresh();
-        }
-
-    }
     @FXML
     public void handleReturn() {
-        populateTableView(false);
-        populateTableView(true);
+        populateTableView(true, searchTable, userController, searchTitle);
+        populateTableView(false, loanTable, userController, loanTitle);
         Loan selectedLoan = loanTable.getSelectionModel().getSelectedItem();
 
         boolean returnSuccess = userController.processReturn(selectedLoan.getLoanID());
         if (returnSuccess){
-            populateTableView(true);
-            populateTableView(false);
-            System.out.println("yes");
+            populateTableView(true, searchTable, userController, searchTitle);
+            populateTableView(false, loanTable, userController, loanTitle);
+            System.out.println("You have successfully return the book.");
         }
         else {
-            System.out.println("NOOOOO");
+            System.out.println("Return failed");
         }
-
-
-
     }
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -155,17 +146,17 @@ public class UserScene implements Initializable {
 
     public void handleLogout() throws IOException {
         // Load Login Scene
-        FXMLLoader newLoader = SceneUtils.loadScene(stage, "/com/example/librarydatabase/login_scene.fxml",
+        FXMLLoader newLoader = Scene.loadScene(stage, "/com/example/librarydatabase/login_scene.fxml",
                 "Login To The Library Database");
         LoginScene loginScene = newLoader.getController();
         loginScene.setStage(stage);
-
     }
-    public void initializeControllerThenPopulate(AccountList accList, String username){
-        userController.setUser(accList, username);
-        userController.populateLibrary((User) accList.getMember(username));
-        populateTableView(true);
-        populateTableView(false);
+
+
+    public void initializeController(AccountList accList, String username){
+        userController.setUserAndPopulate(accList.getMember(username));
+        populateTableView(true, searchTable, userController, searchTitle);
+        populateTableView(false, loanTable, userController, loanTitle);
     }
 
 

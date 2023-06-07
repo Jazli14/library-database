@@ -1,26 +1,33 @@
 package com.example.librarydatabase.Model;
 
+import com.example.librarydatabase.Controller.AdminController;
 import com.example.librarydatabase.Controller.UserController;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Library {
-    private Map<Integer, Book> books;
-    private Map<Integer, Loan> loans;
+    private final Map<Integer, Book> books;
+    private final Map<Integer, Loan> loans;
     public UserController userController;   // mm
+    public AdminController adminController;
 
     public Library(UserController userController){
         books = new HashMap<>();
         loans = new HashMap<>();
         this.userController = userController;
     }
+    public Library(AdminController adminController){
+        books = new HashMap<>();
+        loans = new HashMap<>();
+        this.adminController = adminController;
+    }
     public void addBook(Book book) {
         books.put(book.getBookID(), book);
     }
 
-    public void removeBook(int bookID) {
-        books.remove(bookID);
+    public Book removeBook(int bookID) {
+        return books.remove(bookID);
     }
 
     public Book getBook(int bookID) {
@@ -34,19 +41,12 @@ public class Library {
         return books.containsKey(bookID);
     }
 
-    public void clearBooks() {
-        books.clear();
-    }
-
+    public boolean containsLoan(int loanID){ return loans.containsKey(loanID); }
     public void addLoan(Loan loan){
         loans.put(loan.getLoanID(), loan);
     }
 
-    public Loan removeLoan(int loanID) {
-        Loan removedLoan = loans.remove(loanID);
-
-        return removedLoan;
-    }
+    public Loan removeLoan(int loanID) { return loans.remove(loanID); }
     public Loan getLoan(int loanID){
         return loans.get(loanID);
     }
@@ -54,7 +54,6 @@ public class Library {
     public Map<Integer, Loan> getLoans(){
         return loans;
     }
-
 
 
 }

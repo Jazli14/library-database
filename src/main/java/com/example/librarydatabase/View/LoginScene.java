@@ -70,11 +70,11 @@ public class LoginScene implements Initializable {
 
                 if (loginSuccess){
                     // Load User Scene
-                    FXMLLoader newLoader = SceneUtils.loadScene(stage, "/com/example/librarydatabase/user_scene.fxml",
+                    FXMLLoader newLoader = Scene.loadScene(stage, "/com/example/librarydatabase/user_scene.fxml",
                             "User View");
                     UserScene userScene = newLoader.getController();
                     userScene.setStage(stage);
-                    userScene.initializeControllerThenPopulate(auth.getAccList(), username);
+                    userScene.initializeController(auth.getAccList(), username);
 
                 } else {
                     System.out.println("Login failed");
@@ -88,7 +88,7 @@ public class LoginScene implements Initializable {
 
                 if (loginSuccess){
                     // Load Admin Scene
-                    FXMLLoader newLoader = SceneUtils.loadScene(stage,"/com/example/librarydatabase/admin_scene.fxml",
+                    FXMLLoader newLoader = Scene.loadScene(stage,"/com/example/librarydatabase/admin_scene.fxml",
                             "Admin View");
                     AdminScene adminScene = newLoader.getController();
                     adminScene.setStage(stage);

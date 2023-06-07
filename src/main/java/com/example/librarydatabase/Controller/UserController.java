@@ -8,8 +8,6 @@ import java.sql.*;
 
 public class UserController extends Controller {
     private User client;
-    public Library library;
-
     public UserController(){
         library = new Library(this);
     }
@@ -38,67 +36,6 @@ public class UserController extends Controller {
         }
         else {
             return false;
-        }
-
-
-    }
-
-    public void populateLibrary(User client){
-        try {
-            Class.forName("org.postgresql.Driver");
-        }
-        catch (java.lang.ClassNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-
-        try (Connection connection = establishConnection()) {
-            String selectBooks = "SELECT available2.book_id, available2.title, available2.authors, available2.rating, " +
-                    "available2.num_pages, available2.year, available2.ready FROM available2";
-            String selectLoans = "SELECT loan_id, book_id, title, borrower, borrow_date, return_date, overdue " +
-                    "FROM loans2 WHERE borrower = ?";
-
-            try (PreparedStatement statement = connection.prepareStatement(selectBooks)) {
-                try (ResultSet booksResultSet = statement.executeQuery()) {
-                    while (booksResultSet.next()) {
-                        int bookID = booksResultSet.getInt("book_id");
-                        String bookTitle = booksResultSet.getString("title");
-                        String bookAuthor = booksResultSet.getString("authors");
-                        double bookRating = booksResultSet.getDouble("rating");
-                        int bookPages = booksResultSet.getInt("num_pages");
-                        int bookYear = booksResultSet.getInt("year");
-                        boolean availability = booksResultSet.getBoolean("ready");
-
-                        Book newBook = new Book(bookID, bookTitle, bookAuthor,
-                                bookRating, bookPages, bookYear, availability);
-                        library.addBook(newBook);
-                        }
-                    }
-                }
-
-            try (PreparedStatement statement = connection.prepareStatement(selectLoans)) {
-                statement.setString(1, client.getUsername());
-                try (ResultSet loansResultSet = statement.executeQuery()) {
-                    while (loansResultSet.next()) {
-                        int loanID = loansResultSet.getInt("loan_id");
-                        int bookID = loansResultSet.getInt("book_id");
-                        String username = loansResultSet.getString("borrower");
-                        String title = loansResultSet.getString("title");
-                        Date borrowDate = loansResultSet.getDate("borrow_date");
-                        Date returnDate = loansResultSet.getDate("return_date");
-                        boolean overdueStatus = loansResultSet.getBoolean("overdue");
-
-
-                        Loan newLoan = new Loan(loanID, bookID, title,
-                                username, borrowDate, returnDate, overdueStatus);
-                        library.addLoan(newLoan);
-                    }
-                }
-            }
-
-
-        }
-        catch (SQLException | IOException e) {
-            e.printStackTrace();
         }
 
 
@@ -147,10 +84,9 @@ public class UserController extends Controller {
         }
     }
 
-
-
-    public void setUser(AccountList accList, String username){
-        client = (User) accList.getMember(username);
+    public void setUserAndPopulate(Member member){
+        client = (User) member;
+        populateLibrary(client);
     }
 
 }
