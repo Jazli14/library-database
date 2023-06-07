@@ -74,6 +74,7 @@ public class LoginScene implements Initializable {
                             "User View");
                     UserScene userScene = newLoader.getController();
                     userScene.setStage(stage);
+                    userScene.initializeControllerThenPopulate(auth.getAccList(), username);
 
                 } else {
                     System.out.println("Login failed");

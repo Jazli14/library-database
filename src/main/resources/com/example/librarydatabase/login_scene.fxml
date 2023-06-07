@@ -34,11 +34,6 @@
                      <RowConstraints maxHeight="57.800024414062506" minHeight="10.0" prefHeight="57.800024414062506" vgrow="SOMETIMES" />
                  </rowConstraints>
                   <children>
-                     <PasswordField fx:id="userPass" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                        <GridPane.margin>
-                           <Insets />
-                        </GridPane.margin>
-                     </PasswordField>
                      <Label text="Username:" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                         <font>
                            <Font size="14.0" />
@@ -47,7 +42,12 @@
                            <Insets right="20.0" />
                         </GridPane.margin>
                      </Label>
-                     <Label text="Password:" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+                      <TextField fx:id="userName" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                          <GridPane.margin>
+                              <Insets />
+                          </GridPane.margin>
+                      </TextField>
+                      <Label text="Password:" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
                         <font>
                            <Font size="14.0" />
                         </font>
@@ -55,20 +55,16 @@
                            <Insets right="20.0" />
                         </padding>
                      </Label>
-                     <TextField fx:id="userName" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                        <GridPane.margin>
-                           <Insets />
-                        </GridPane.margin>
-                     </TextField>
-                     <Button fx:id="userConfirm" alignment="CENTER" mnemonicParsing="false" onAction="#handleLogin" styleClass="buttonOne" stylesheets="@styles.css" text="Confirm" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3">
+                      <PasswordField fx:id="userPass" onAction="#handleLogin" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                          <GridPane.margin>
+                              <Insets />
+                          </GridPane.margin>
+                      </PasswordField>
+                      <Button fx:id="userConfirm" mnemonicParsing="false" onAction="#handleLogin" text="Confirm" GridPane.columnIndex="1" GridPane.rowIndex="3">
                         <font>
                            <Font size="14.0" />
-                        </font>
-                        <GridPane.margin>
-                           <Insets />
-                        </GridPane.margin>
-                     </Button>
-                     <Button fx:id="userRegister" alignment="CENTER" mnemonicParsing="false" onAction="#handleRegister" text="Register" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+                        </font></Button>
+                      <Button fx:id="userRegister" alignment="CENTER" mnemonicParsing="false" onAction="#handleRegister" text="Register" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
                         <font>
                            <Font size="14.0" />
                         </font>
