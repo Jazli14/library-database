@@ -10,15 +10,12 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
-public class BookDialog implements Initializable {
+public class EditBookDialog implements Initializable {
     @FXML
     private TextField authorInput;
 
     @FXML
     private CheckBox availableInput;
-
-    @FXML
-    private TextField idInput;
 
     @FXML
     private TextField pageInput;
@@ -34,6 +31,10 @@ public class BookDialog implements Initializable {
 
     private Dialog dialog;
 
+    private int bookID;
+
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         UnaryOperator<TextFormatter.Change> numericFilter = change -> {
@@ -48,9 +49,6 @@ public class BookDialog implements Initializable {
         yearInput.setTextFormatter(yearFormatter);
         yearInput.setText("");
 
-        TextFormatter<Integer> idFormatter = new TextFormatter<>(new IntegerStringConverter(), 0, numericFilter);
-        idInput.setTextFormatter(idFormatter);
-        idInput.setText("");
         TextFormatter<Integer> pageFormatter = new TextFormatter<>(new IntegerStringConverter(), 0, numericFilter);
         pageInput.setTextFormatter(pageFormatter);
         pageInput.setText("");
@@ -74,13 +72,6 @@ public class BookDialog implements Initializable {
 
     public void handleOkButton() {
         // Retrieve the entered data
-        int bookID;
-        if (idInput.getText().isEmpty()){
-            bookID = -1;
-        }
-        else {
-            bookID = Integer.parseInt(idInput.getText());
-        }
         String title = titleInput.getText();
         String author = authorInput.getText();
         double rating;
@@ -97,18 +88,19 @@ public class BookDialog implements Initializable {
         else {
             length = Integer.parseInt(pageInput.getText());
         }
-        int year;
 
+        int year;
         if (yearInput.getText().isEmpty()){
             year = -1;
+
         }
         else {
             year = Integer.parseInt(yearInput.getText());
         }
         boolean available = availableInput.isSelected();
 
-        // Pass the data back to the AdminScene or perform any other required action
-        AdminScene.handleBookData(bookID, title, author, rating, length, year, available);
+        // Pass the data back to the AdminScene
+        AdminScene.handleEditBookData(this.bookID, title, author, rating, length, year, available);
 
         // Close the dialog
         dialog.close();
@@ -118,5 +110,13 @@ public class BookDialog implements Initializable {
         dialog.close();
     }
 
+    public void setBookID(int bookID) {
+        this.bookID = bookID;
+    }
 
+    public int getBookID() {
+        return bookID;
+    }
 }
+
+

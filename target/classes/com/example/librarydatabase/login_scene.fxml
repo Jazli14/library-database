@@ -17,125 +17,135 @@
   <padding>
     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
   </padding>
-   <TabPane fx:id="tabPane" prefHeight="379.0" prefWidth="658.0" stylesheets="@styles.css" tabClosingPolicy="UNAVAILABLE">
-     <tabs>
-       <Tab fx:id="userTab" onSelectionChanged="#handleTabSelectionChanged" text="User">
-            <content>
-               <GridPane>
-                 <columnConstraints>
-                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="194.5999755859375" minWidth="10.0" prefWidth="123.1999755859375" />
-                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="372.4" minWidth="10.0" prefWidth="224.999951171875" />
-                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="293.800048828125" minWidth="10.0" prefWidth="85.800048828125" />
-                 </columnConstraints>
-                 <rowConstraints>
-                     <RowConstraints maxHeight="38.599981689453124" minHeight="8.199990653991698" prefHeight="24.5999849319458" vgrow="SOMETIMES" />
-                   <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="44.0" vgrow="SOMETIMES" />
-                   <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="44.0" vgrow="SOMETIMES" />
-                     <RowConstraints maxHeight="57.800024414062506" minHeight="10.0" prefHeight="57.800024414062506" vgrow="SOMETIMES" />
-                 </rowConstraints>
-                  <children>
-                     <Label text="Username:" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
-                        <font>
-                           <Font size="14.0" />
-                        </font>
-                        <GridPane.margin>
-                           <Insets right="20.0" />
-                        </GridPane.margin>
-                     </Label>
-                      <TextField fx:id="userName" onAction="#handleLogin" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                          <GridPane.margin>
-                              <Insets />
-                          </GridPane.margin>
-                      </TextField>
-                      <Label text="Password:" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
-                        <font>
-                           <Font size="14.0" />
-                        </font>
-                        <padding>
-                           <Insets right="20.0" />
-                        </padding>
-                     </Label>
-                      <PasswordField fx:id="userPass" onAction="#handleLogin" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                          <GridPane.margin>
-                              <Insets />
-                          </GridPane.margin>
-                      </PasswordField>
-                      <Button fx:id="userConfirm" mnemonicParsing="false" onAction="#handleLogin" text="Confirm" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                        <font>
-                           <Font size="14.0" />
-                        </font></Button>
-                      <Button fx:id="userRegister" alignment="CENTER" mnemonicParsing="false" onAction="#handleRegister" text="Register" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
-                        <font>
-                           <Font size="14.0" />
-                        </font>
-                        <GridPane.margin>
-                           <Insets />
-                        </GridPane.margin>
-                     </Button>
-                  </children>
-               </GridPane>
-            </content>
-         </Tab>
-       <Tab fx:id="adminTab" onSelectionChanged="#handleTabSelectionChanged" text="Admin">
-            <content>
-               <GridPane>
-                  <columnConstraints>
-                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="194.5999755859375" minWidth="10.0" prefWidth="123.1999755859375" />
-                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="372.4" minWidth="10.0" prefWidth="224.999951171875" />
-                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="293.800048828125" minWidth="10.0" prefWidth="85.800048828125" />
-                  </columnConstraints>
-                  <rowConstraints>
-                     <RowConstraints maxHeight="38.599981689453124" minHeight="8.199990653991698" prefHeight="24.5999849319458" vgrow="SOMETIMES" />
-                     <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="44.0" vgrow="SOMETIMES" />
-                     <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="44.0" vgrow="SOMETIMES" />
-                     <RowConstraints maxHeight="57.800024414062506" minHeight="10.0" prefHeight="57.800024414062506" vgrow="SOMETIMES" />
-                  </rowConstraints>
-                  <children>
-                     <Label text="Username:" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
-                        <font>
-                           <Font size="14.0" />
-                        </font>
-                        <GridPane.margin>
-                           <Insets right="20.0" />
-                        </GridPane.margin>
-                     </Label>
-                     <Label text="Password:" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
-                        <font>
-                           <Font size="14.0" />
-                        </font>
-                        <padding>
-                           <Insets right="20.0" />
-                        </padding>
-                     </Label>
-                     <TextField fx:id="adminName" onAction="#handleLogin" prefHeight="26.0" prefWidth="268.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                        <GridPane.margin>
-                           <Insets />
-                        </GridPane.margin>
-                     </TextField>
-                     <PasswordField fx:id="adminPass" onAction="#handleLogin" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                        <GridPane.margin>
-                           <Insets />
-                        </GridPane.margin>
-                     </PasswordField>
-                     <Button fx:id="adminConfirm" alignment="CENTER" mnemonicParsing="false" onAction="#handleLogin" text="Confirm" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3">
-                        <font>
-                           <Font size="14.0" />
-                        </font>
-                        <GridPane.margin>
-                           <Insets />
-                        </GridPane.margin>
-                     </Button>
-                     <Button fx:id="adminRegister" alignment="CENTER" mnemonicParsing="false" onAction="#handleRegister" text="Register" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
-                        <font>
-                           <Font size="14.0" />
-                        </font>
-                        <GridPane.margin>
-                           <Insets />
-                        </GridPane.margin>
-                     </Button>
-                  </children>
-               </GridPane>
-            </content></Tab>
-     </tabs>
-   </TabPane>
+    <TabPane fx:id="tabPane" prefHeight="379.0" prefWidth="658.0" stylesheets="@styles.css"
+             tabClosingPolicy="UNAVAILABLE">
+        <Tab fx:id="userTab" onSelectionChanged="#handleTabSelectionChanged" text="User">
+            <GridPane>
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="194.5999755859375" minWidth="10.0"
+                                       prefWidth="123.1999755859375"/>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="372.4" minWidth="10.0"
+                                       prefWidth="224.999951171875"/>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="293.800048828125" minWidth="10.0"
+                                       prefWidth="85.800048828125"/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints maxHeight="38.599981689453124" minHeight="8.199990653991698"
+                                    prefHeight="24.5999849319458" vgrow="SOMETIMES"/>
+                    <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="44.0" vgrow="SOMETIMES"/>
+                    <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="44.0" vgrow="SOMETIMES"/>
+                    <RowConstraints maxHeight="57.800024414062506" minHeight="10.0" prefHeight="57.800024414062506"
+                                    vgrow="SOMETIMES"/>
+                </rowConstraints>
+                <Label text="Username:" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                    <GridPane.margin>
+                        <Insets right="20.0"/>
+                    </GridPane.margin>
+                </Label>
+                <TextField fx:id="userName" onAction="#handleLogin" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <GridPane.margin>
+                        <Insets/>
+                    </GridPane.margin>
+                </TextField>
+                <Label text="Password:" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                    <padding>
+                        <Insets right="20.0"/>
+                    </padding>
+                </Label>
+                <PasswordField fx:id="userPass" onAction="#handleLogin" GridPane.columnIndex="1"
+                               GridPane.rowIndex="2">
+                    <GridPane.margin>
+                        <Insets/>
+                    </GridPane.margin>
+                </PasswordField>
+                <Button fx:id="userConfirm" mnemonicParsing="false" onAction="#handleLogin" text="Confirm"
+                        GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                </Button>
+                <Button fx:id="userRegister" alignment="CENTER" mnemonicParsing="false" onAction="#handleRegister"
+                        text="Register" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                    <GridPane.margin>
+                        <Insets/>
+                    </GridPane.margin>
+                </Button>
+            </GridPane>
+        </Tab>
+        <Tab fx:id="adminTab" onSelectionChanged="#handleTabSelectionChanged" text="Admin">
+            <GridPane>
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="194.5999755859375" minWidth="10.0"
+                                       prefWidth="123.1999755859375"/>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="372.4" minWidth="10.0"
+                                       prefWidth="224.999951171875"/>
+                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="293.800048828125" minWidth="10.0"
+                                       prefWidth="85.800048828125"/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints maxHeight="38.599981689453124" minHeight="8.199990653991698"
+                                    prefHeight="24.5999849319458" vgrow="SOMETIMES"/>
+                    <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="44.0" vgrow="SOMETIMES"/>
+                    <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="44.0" vgrow="SOMETIMES"/>
+                    <RowConstraints maxHeight="57.800024414062506" minHeight="10.0" prefHeight="57.800024414062506"
+                                    vgrow="SOMETIMES"/>
+                </rowConstraints>
+                <Label text="Username:" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                    <GridPane.margin>
+                        <Insets right="20.0"/>
+                    </GridPane.margin>
+                </Label>
+                <Label text="Password:" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                    <padding>
+                        <Insets right="20.0"/>
+                    </padding>
+                </Label>
+                <TextField fx:id="adminName" onAction="#handleLogin" prefHeight="26.0" prefWidth="268.0"
+                           GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <GridPane.margin>
+                        <Insets/>
+                    </GridPane.margin>
+                </TextField>
+                <PasswordField fx:id="adminPass" onAction="#handleLogin" GridPane.columnIndex="1"
+                               GridPane.rowIndex="2">
+                    <GridPane.margin>
+                        <Insets/>
+                    </GridPane.margin>
+                </PasswordField>
+                <Button fx:id="adminConfirm" alignment="CENTER" mnemonicParsing="false" onAction="#handleLogin"
+                        text="Confirm" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                    <GridPane.margin>
+                        <Insets/>
+                    </GridPane.margin>
+                </Button>
+                <Button fx:id="adminRegister" alignment="CENTER" mnemonicParsing="false" onAction="#handleRegister"
+                        text="Register" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                    <GridPane.margin>
+                        <Insets/>
+                    </GridPane.margin>
+                </Button>
+            </GridPane>
+        </Tab>
+    </TabPane>
 </VBox>

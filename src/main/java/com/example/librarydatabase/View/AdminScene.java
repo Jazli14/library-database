@@ -20,8 +20,6 @@ import java.util.ResourceBundle;
 
 public class AdminScene extends Scene implements Initializable {
     @FXML
-    private Button adminLogoutButton;
-    @FXML
     private TableView<Book> adminSearchTable;
     @FXML
     private TableColumn<Book, Integer> adminBookID;
@@ -54,6 +52,8 @@ public class AdminScene extends Scene implements Initializable {
     @FXML
     private TableColumn<Loan, Boolean> adminLoanOverdue;
     @FXML
+    private Button adminLogoutButton;
+    @FXML
     private Button loansLogoutButton;
     @FXML
     private Button createBook;
@@ -70,26 +70,41 @@ public class AdminScene extends Scene implements Initializable {
 
     public static void handleBookData(int bookID, String title, String author, double rating,
                                       int length, int year, boolean available) {
-        boolean createBookSuccess = adminController.processCreateBook(bookID, title, author,
-                rating, length, year, available);
+        boolean createBookSuccess;
+        if (bookID == -1 || title.isEmpty() || author.isEmpty() || rating == -1 || length == -1 || year == -1){
+            createBookSuccess = false;
+        }
+        else {
+            createBookSuccess = adminController.processCreateBook(bookID, title, author,
+                    rating, length, year, available);
+        }
 
         if (createBookSuccess){
             showAlert(AdminScenario.BOOK_CREATION_SUCCESS, "Successfully created book #" + bookID + ".");
         }
         else {
-            showAlert(AdminScenario.BOOK_CREATION_FAILURE, "Book #" + bookID + " could not created.");
+            showAlert(AdminScenario.BOOK_CREATION_FAILURE, "The book could not created.");
         }
 
     }
 
     public static void handleLoanData(int bookID, String title, String borrower,
                                       Date borrowDate, Date returnDate, boolean overdue) {
-        boolean createLoanSuccess = adminController.processCreateLoan(bookID, title, borrower,
-                borrowDate, returnDate, overdue);
+        int potentialID;
+        if (bookID == -1 || title.isEmpty() || borrower.isEmpty() || borrowDate == null || returnDate == null) {
+            potentialID = 0;
+        }
 
-        if (createLoanSuccess){
-            showAlert(AdminScenario.LOAN_CREATION_SUCCESS, "Successfully created loan.");
+        else {
+            potentialID = adminController.processCreateLoan(bookID, title, borrower,
+                    borrowDate, returnDate, overdue);
+        }
 
+        if (potentialID != 0){
+            String returnedID = Integer.toString(potentialID);
+
+            showAlert(AdminScenario.LOAN_CREATION_SUCCESS, "Successfully created loan #" +
+                     returnedID +  ".");
         }
         else {
             showAlert(AdminScenario.LOAN_CREATION_FAILURE, "Loan creation failed.");
@@ -97,6 +112,30 @@ public class AdminScene extends Scene implements Initializable {
 
 
     }
+
+    public static void handleEditBookData(int bookID, String title, String author,
+                                          double rating, int length, int year, boolean available) {
+        boolean editBookSuccess = adminController.processEditBook(bookID, title, author, rating, length, year, available);
+
+        if (editBookSuccess){
+            showAlert(AdminScenario.BOOK_EDIT_SUCCESS, "Successfully edited book #" + bookID + ".");
+        }
+        else {
+            showAlert(AdminScenario.BOOK_EDIT_FAILURE, "Book #" + bookID + " could not edited.");
+        }
+    }
+
+    public static void handleEditLoanData(int loanID, String borrower, Date borrowDate, Date returnDate, boolean overdue) {
+        boolean editLoanSuccess = adminController.processEditLoan(loanID, borrower, borrowDate, returnDate, overdue);
+
+        if (editLoanSuccess){
+            showAlert(AdminScenario.LOAN_EDIT_SUCCESS, "Successfully edited loan #" + loanID + ".");
+        }
+        else {
+            showAlert(AdminScenario.LOAN_EDIT_FAILURE, "Book #" + loanID + " could not edited.");
+        }
+    }
+
 
     @FXML
     public void setStage(Stage stage){
@@ -119,6 +158,8 @@ public class AdminScene extends Scene implements Initializable {
         adminController.setAdminAndPopulate(accList.getMember(username));
         populateTableView(true, adminSearchTable, adminController, adminBookID);
         populateTableView(false, adminLoanTable, adminController, adminTableLoanID);
+
+
     }
     @FXML
     public void handleRemoveBook(){
@@ -195,7 +236,8 @@ public class AdminScene extends Scene implements Initializable {
     public static void showAlert(AdminScenario scenario, String userMessage) {
         Alert alert;
         if ((scenario != AdminScenario.LOAN_CREATION_SUCCESS && scenario != AdminScenario.BOOK_CREATION_SUCCESS
-                && scenario != AdminScenario.LOAN_REMOVAL_SUCCESS && scenario != AdminScenario.BOOK_REMOVAL_SUCCESS)){
+                && scenario != AdminScenario.LOAN_REMOVAL_SUCCESS && scenario != AdminScenario.BOOK_REMOVAL_SUCCESS)
+                && scenario != AdminScenario.BOOK_EDIT_SUCCESS && scenario != AdminScenario.LOAN_EDIT_SUCCESS){
             alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             switch (scenario) {
@@ -203,6 +245,8 @@ public class AdminScene extends Scene implements Initializable {
                 case LOAN_CREATION_FAILURE -> alert.setHeaderText("Loan creation was unsuccessful.");
                 case BOOK_REMOVAL_FAILURE -> alert.setHeaderText("Book removal was unsuccessful.");
                 case LOAN_REMOVAL_FAILURE -> alert.setHeaderText("Loan removal was unsuccessful.");
+                case BOOK_EDIT_FAILURE -> alert.setHeaderText("Book edit was unsuccessful");
+                case LOAN_EDIT_FAILURE -> alert.setHeaderText("Loan edit was unsuccessful");
             }
         }
         else {
@@ -213,6 +257,8 @@ public class AdminScene extends Scene implements Initializable {
                 case BOOK_REMOVAL_SUCCESS -> alert.setHeaderText("Book removal was successful.");
                 case LOAN_CREATION_SUCCESS -> alert.setHeaderText("Loan creation was successful.");
                 case LOAN_REMOVAL_SUCCESS -> alert.setHeaderText("Loan removal was successful.");
+                case BOOK_EDIT_SUCCESS -> alert.setHeaderText("Book edit was successful.");
+                case LOAN_EDIT_SUCCESS -> alert.setHeaderText("Loan edit was successful.");
             }
         }
 
@@ -221,6 +267,48 @@ public class AdminScene extends Scene implements Initializable {
         alert.showAndWait();
 
     }
+
+    @FXML
+    public void handleEditBook() throws IOException {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        Book book = adminSearchTable.getSelectionModel().getSelectedItem();
+
+        // Load the dialog's content from an FXML file
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/edit_book_dialog.fxml"));
+        Parent dialogPane = loader.load();
+
+        EditBookDialog dialogController = loader.getController();
+        dialogController.setDialogStage(dialog);
+        dialogController.setBookID(book.getBookID());
+
+        dialog.setDialogPane((DialogPane) dialogPane);
+
+        // Set the dialog's properties
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(stage);
+
+        // Clear existing button types before adding new ones
+        dialog.getDialogPane().getButtonTypes().clear();
+
+        // Add the desired button types
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+
+        if (result.isPresent()) {
+            if (result.get() == ButtonType.OK) {
+                // handle ok button
+                dialogController.handleOkButton();
+            } else if (result.get() == ButtonType.CANCEL) {
+                // handle cancel button
+                dialogController.handleCancelButton();
+            }
+        }
+
+        populateTableView(true, adminSearchTable, adminController, adminBookID);
+    }
+
 
     @FXML
     public void handleCreateLoan() throws IOException {
@@ -235,6 +323,7 @@ public class AdminScene extends Scene implements Initializable {
 
         loanDialogController.setDialogStage(loanDialog);
         loanDialog.setDialogPane((DialogPane) loanDialogPane);
+
 
         // Set the dialog's properties
         loanDialog.initOwner(stage);
@@ -262,38 +351,47 @@ public class AdminScene extends Scene implements Initializable {
         }
     }
 
+    @FXML
+    public void handleEditLoan() throws IOException {
+        Dialog<ButtonType> loanDialog = new Dialog<>();
+        Loan loan = adminLoanTable.getSelectionModel().getSelectedItem();
 
+        // Load the dialog's content from an FXML file
 
-//        Book selectedBook = adminTable.getSelectionModel().getSelectedItem();
-//        LocalDate startDate = borrowDatePicker.getValue();
-//        LocalDate endDate = returnDatePicker.getValue();
-//
-//        if (selectedBook != null && startDate != null && endDate != null) {
-//            // Convert LocalDate to java.sql.Date
-//            Date sqlStartDate = java.sql.Date.valueOf(startDate);
-//            Date sqlEndDate = java.sql.Date.valueOf(endDate);
-//            boolean borrowSuccess = userController.processBorrow(selectedBook.getBookID(), sqlStartDate, sqlEndDate);
-//            if (!borrowSuccess){
-//                System.out.println("Loan unsuccessful");
-//            }
-//            else {
-//                // Format the date as "yyyy-MM-dd"
-//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//                String startDateString = sdf.format(sqlStartDate);
-//                String endDateString = sdf.format(sqlEndDate);
-//
-//                System.out.println("Successfully loaned " + selectedBook.getTitle() + " by " +
-//                        selectedBook.getAuthor() + " for " + startDateString + " to " + endDateString);
-//
-//                populateTableView(true);
-//                populateTableView(false);
-//            }
-//        }
-//        else {
-//            System.out.println("You need to select a book, borrow date and return date");
-//        }
-//
-//    }
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/edit_loan_dialog.fxml"));
+        Parent loanDialogPane = loader.load();
+
+        EditLoanDialog loanDialogController = loader.getController();
+
+        loanDialogController.setDialogStage(loanDialog);
+        loanDialog.setDialogPane((DialogPane) loanDialogPane);
+        loanDialogController.setLoanID(loan.getLoanID());
+
+        // Set the dialog's properties
+        loanDialog.initOwner(stage);
+        loanDialog.initModality(Modality.APPLICATION_MODAL);
+
+        // Clear existing button types before adding new ones
+        loanDialog.getDialogPane().getButtonTypes().clear();
+
+        // Add the desired button types
+        loanDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        Optional<ButtonType> result = loanDialog.showAndWait();
+
+        if (result.isPresent()) {
+            if (result.get() == ButtonType.CANCEL) {
+                // handle cancel button
+                loanDialogController.handleCancelButton();
+            } else if (result.get() == ButtonType.OK) {
+                // handle ok button
+                loanDialogController.handleOkButton();
+            }
+
+            populateTableView(false, adminLoanTable, adminController, adminTableLoanID);
+
+        }
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
