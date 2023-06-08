@@ -11,18 +11,16 @@ public class UserController extends Controller {
     public UserController(){
         library = new Library(this);
     }
-    public boolean processBorrow(int bookID, Date borrowDate, Date returnDate) {
-        boolean borrowSuccess = client.borrowBook(bookID, library, borrowDate, returnDate);
-
-        if (borrowSuccess){
+    public UserScenario processBorrow(int bookID, Date borrowDate, Date returnDate) {
+        UserScenario borrowSuccess = client.borrowBook(bookID, library, borrowDate, returnDate);
+        if (borrowSuccess == UserScenario.LOAN_SUCCESS){
             updateBookStatus(bookID, false);
 
-            return true;
         }
         else {
             System.out.println("Loan failed");
-            return false;
         }
+        return borrowSuccess;
     }
 
     public boolean processReturn(int loanID){

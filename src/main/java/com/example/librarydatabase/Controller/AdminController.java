@@ -10,11 +10,8 @@ import java.sql.SQLException;
 
 public class AdminController extends Controller {
     private Admin client;
-
-    public Library library;
     public AdminController(){
         library = new Library(this);
-        populateLibrary(client);
     }
 
     public void setClient(Admin client) {
@@ -56,11 +53,9 @@ public class AdminController extends Controller {
 
         if (newLoan != null){
             updateSQLDatabase(newLoan, true);
-
             return true;
         }
         else {
-            System.out.println("Loan failed");
             return false;
         }
 
@@ -139,6 +134,38 @@ public class AdminController extends Controller {
     }
 
     public void editBook(String field, int bookID){
+        switch (field) {
+            case "title":
+                // Process title property
+                System.out.println("Processing title...");
+                break;
+            case "author":
+                // Process author property
+                System.out.println("Processing author...");
+                break;
+            case "rating":
+                // Process rating property
+                System.out.println("Processing rating...");
+                break;
+            case "num_pages":
+                // Process num_pages property
+                System.out.println("Processing num_pages...");
+                break;
+            case "year":
+                // Process year property
+                System.out.println("Processing year...");
+                break;
+            case "availability":
+                // Process availability property
+                System.out.println("Processing availability...");
+                break;
+            default:
+                // Handle unrecognized property
+                System.out.println("Unrecognized property: " + field);
+                break;
+
+        }
+
         return;
     }
 

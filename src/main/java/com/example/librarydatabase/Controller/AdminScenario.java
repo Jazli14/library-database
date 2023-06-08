@@ -1,0 +1,13 @@
+package com.example.librarydatabase.Controller;
+
+public enum AdminScenario {
+    BOOK_CREATION_SUCCESS,
+    BOOK_CREATION_FAILURE,
+    LOAN_CREATION_SUCCESS,
+    LOAN_CREATION_FAILURE,
+    BOOK_REMOVAL_SUCCESS,
+    BOOK_REMOVAL_FAILURE,
+    LOAN_REMOVAL_SUCCESS,
+    LOAN_REMOVAL_FAILURE
+
+}

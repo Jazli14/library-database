@@ -1,6 +1,7 @@
 package com.example.librarydatabase.View;
 import com.example.librarydatabase.Controller.*;
 import com.example.librarydatabase.Model.*;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -65,6 +66,14 @@ public class UserScene extends Scene implements Initializable {
     private Spinner<Integer> yearSpinner;
     @FXML
     private CheckBox availableCheck;
+    @FXML
+    private TextField searchFieldAuthor;
+    @FXML
+    private Button searchButton;
+    @FXML
+    private Button loansLogoutButton;
+    @FXML
+    private Button returnButton;
     private final UserController userController;
 
     private Stage stage;
@@ -84,9 +93,9 @@ public class UserScene extends Scene implements Initializable {
             // Convert LocalDate to java.sql.Date
             Date sqlStartDate = java.sql.Date.valueOf(startDate);
             Date sqlEndDate = java.sql.Date.valueOf(endDate);
-            boolean borrowSuccess = userController.processBorrow(selectedBook.getBookID(), sqlStartDate, sqlEndDate);
-            if (!borrowSuccess){
-                System.out.println("Loan unsuccessful");
+            UserScenario borrowSuccess = userController.processBorrow(selectedBook.getBookID(), sqlStartDate, sqlEndDate);
+            if (borrowSuccess == UserScenario.LOAN_FAILURE_DATE){
+                showAlert(borrowSuccess, "You need to select a valid return period.");
             }
             else {
                 // Format the date as "yyyy-MM-dd"
@@ -94,20 +103,69 @@ public class UserScene extends Scene implements Initializable {
                 String startDateString = sdf.format(sqlStartDate);
                 String endDateString = sdf.format(sqlEndDate);
 
-                System.out.println("Successfully loaned " + selectedBook.getTitle() + " by " +
-                        selectedBook.getAuthor() + " for " + startDateString + " to " + endDateString);
+                String successMessage = "Successfully loaned " + selectedBook.getTitle() + " by " +
+                        selectedBook.getAuthor() + " for " + startDateString + " to " + endDateString + ".";
+                showAlert(UserScenario.LOAN_SUCCESS, successMessage);
 
                 populateTableView(true, searchTable, userController, searchTitle);
                 populateTableView(false, loanTable, userController, loanTitle);
             }
         }
         else {
-            System.out.println("You need to select a book, borrow date and return date");
+            showAlert(UserScenario.LOAN_FAILURE_INCOMPLETE, "You need to select a book and a return period.");
         }
 
 
     }
 
+    @FXML
+    public void handleReturn() {
+        Loan selectedLoan = loanTable.getSelectionModel().getSelectedItem();
+
+        boolean returnSuccess = userController.processReturn(selectedLoan.getLoanID());
+
+
+        if (returnSuccess) {
+            populateTableView(true, searchTable, userController, searchTitle);
+            populateTableView(false, loanTable, userController, loanTitle);
+            showAlert(UserScenario.RETURN_SUCCESS, "You have successfully loaned out " +
+                    selectedLoan.getTitle() + ".");
+        }
+        else {
+            showAlert(UserScenario.RETURN_FAILURE, "Something went wrong and " + selectedLoan.getTitle() +
+                    " could not be loaned.");
+
+        }
+    }
+
+    public void showAlert(UserScenario scenario, String userMessage) {
+        Alert alert;
+        if ((scenario != UserScenario.LOAN_SUCCESS && scenario != UserScenario.RETURN_SUCCESS)){
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            if (scenario == UserScenario.RETURN_FAILURE){
+                alert.setHeaderText("Return was unsuccessful.");
+            }
+            else {
+                alert.setHeaderText("Loan was unsuccessful.");
+            }
+        }
+        else {
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success");
+            if (scenario == UserScenario.RETURN_SUCCESS){
+                alert.setHeaderText("Return was successful.");
+            }
+            else {
+                alert.setHeaderText("Loan was unsuccessful.");
+            }
+        }
+
+        alert.setContentText(userMessage);
+
+        alert.showAndWait();
+
+    }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
         searchTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -122,23 +180,19 @@ public class UserScene extends Scene implements Initializable {
         loanReturn.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
         loanOverdue.setCellValueFactory(new PropertyValueFactory<>("isOverdue"));
 
-    }
+        int minValue = 1900;
+        int maxValue = 2020;
+        int initialValue = 2000;
 
-    @FXML
-    public void handleReturn() {
-        populateTableView(true, searchTable, userController, searchTitle);
-        populateTableView(false, loanTable, userController, loanTitle);
-        Loan selectedLoan = loanTable.getSelectionModel().getSelectedItem();
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory
+                .IntegerSpinnerValueFactory(minValue, maxValue, initialValue);
 
-        boolean returnSuccess = userController.processReturn(selectedLoan.getLoanID());
-        if (returnSuccess){
-            populateTableView(true, searchTable, userController, searchTitle);
-            populateTableView(false, loanTable, userController, loanTitle);
-            System.out.println("You have successfully return the book.");
-        }
-        else {
-            System.out.println("Return failed");
-        }
+        yearSpinner.setValueFactory(valueFactory);
+
+        pageCombo.setItems(FXCollections.observableArrayList(
+                "0-100", "101-200", "201-300", "301-400", "400-500", "More than 500"));
+
+
     }
     public void setStage(Stage stage) {
         this.stage = stage;

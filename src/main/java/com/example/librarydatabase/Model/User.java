@@ -1,5 +1,7 @@
 package com.example.librarydatabase.Model;
 
+import com.example.librarydatabase.Controller.UserScenario;
+
 import java.sql.Date;
 
 public class User extends Member {
@@ -8,7 +10,7 @@ public class User extends Member {
         setAdmin(false);
     }
 
-    public boolean borrowBook(int bookID, Library library, Date borrowDate, Date returnDate) {
+    public UserScenario borrowBook(int bookID, Library library, Date borrowDate, Date returnDate) {
         Book book = library.getBook(bookID);
         if (book.getAvailability()) {
             if (isValidDate(borrowDate, returnDate)){
@@ -18,16 +20,16 @@ public class User extends Member {
                 library.addLoan(newLoan);
                 library.userController.updateLoans(newLoan,true);
                 System.out.println("Borrowing book: " + book.getTitle());
-                return true;
+                return UserScenario.LOAN_SUCCESS;
             }
             else {
                 System.out.println("Invalid date: borrow date came after return date.");
-                return false;
+                return UserScenario.LOAN_FAILURE_DATE;
             }
 
         } else {
             System.out.println(book.getTitle()+ " is already loaned out.");
-            return false;
+            return UserScenario.LOAN_FAILURE_AVAILABLE;
         }
     }
 

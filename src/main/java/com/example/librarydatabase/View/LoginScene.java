@@ -3,9 +3,11 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.example.librarydatabase.Controller.Authenticator;
+import com.example.librarydatabase.Controller.LoginScenario;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert.AlertType;
 
 import javafx.scene.control.*;
 import javafx.stage.*;
@@ -43,7 +45,6 @@ public class LoginScene implements Initializable {
 
     Authenticator auth;
 
-
     @FXML
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -60,7 +61,7 @@ public class LoginScene implements Initializable {
     }
     @FXML
     private void handleLogin() throws IOException {
-        boolean loginSuccess;
+        LoginScenario loginSuccess;
 
         try {
             if (currentTab.equals(userTab)) {
@@ -68,7 +69,7 @@ public class LoginScene implements Initializable {
                 String password = userPass.getText();
                 loginSuccess = auth.processLogin(username, password, false);
 
-                if (loginSuccess){
+                if (loginSuccess == null){
                     // Load User Scene
                     FXMLLoader newLoader = Scene.loadScene(stage, "/com/example/librarydatabase/user_scene.fxml",
                             "User View");
@@ -78,6 +79,7 @@ public class LoginScene implements Initializable {
 
                 } else {
                     System.out.println("Login failed");
+                    showAlert(loginSuccess);
                 }
 
             } else if (currentTab.equals(adminTab)) {
@@ -86,15 +88,17 @@ public class LoginScene implements Initializable {
                 loginSuccess = auth.processLogin(username, password, true);
 
 
-                if (loginSuccess){
+                if (loginSuccess==null){
                     // Load Admin Scene
                     FXMLLoader newLoader = Scene.loadScene(stage,"/com/example/librarydatabase/admin_scene.fxml",
                             "Admin View");
                     AdminScene adminScene = newLoader.getController();
                     adminScene.setStage(stage);
+                    adminScene.initializeAdminController(auth.getAccList(), username);
 
                 } else {
                     System.out.println("Login failed");
+                    showAlert(loginSuccess);
                 }
 
             }
@@ -107,7 +111,7 @@ public class LoginScene implements Initializable {
     @FXML
     private void handleRegister() throws IOException {
 
-        boolean isValidRegistration = false;
+        LoginScenario isValidRegistration = null;
 
         try {
             if (currentTab.equals(userTab)) {
@@ -121,17 +125,41 @@ public class LoginScene implements Initializable {
                 isValidRegistration = auth.processRegistration(username, password, true);
             }
 
-            if (isValidRegistration){
-                System.out.println("Your account is registered");
-            }
-            else {
-                System.out.println("Registration failed");
-            }
+            showAlert(isValidRegistration);
 
         } catch (Exception e) {
                 e.printStackTrace();
             }
     }
+    public void showAlert(LoginScenario scenario) {
+        Alert alert;
+        if (scenario != LoginScenario.REGISTRATION_SUCCESS){
+            alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Something went wrong.");
+        }
+        else {
+            alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText("Registration success.");
+        }
+
+        String message = switch (scenario) {
+            case PASSWORD_EMPTY -> "Please enter a password.";
+            case USERNAME_EMPTY -> "Please enter a username.";
+            case USERNAME_AND_PASSWORD_EMPTY -> "Please enter a username and password.";
+            case USERNAME_TAKEN -> "This username has been taken, please try a different one.";
+            case USERNAME_NOT_FOUND -> "Login has failed, username does not exist.";
+            case USERNAME_PASSWORD_MISMATCH -> "Login has failed, the username and password do not match.";
+            case REGISTRATION_SUCCESS -> "Your account has been successfully registered.";
+        };
+
+        alert.setContentText(message);
+
+        alert.showAndWait();
+
+    }
+
     @FXML
     private void handleTabSelectionChanged() {
         if (isInitialized) {

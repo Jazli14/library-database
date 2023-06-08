@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="503.0" prefWidth="724.0" spacing="20.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.librarydatabase.View.LoginScene">
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.librarydatabase.View.LoginScene">
   <padding>
     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
   </padding>
@@ -42,7 +42,7 @@
                            <Insets right="20.0" />
                         </GridPane.margin>
                      </Label>
-                      <TextField fx:id="userName" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                      <TextField fx:id="userName" onAction="#handleLogin" GridPane.columnIndex="1" GridPane.rowIndex="1">
                           <GridPane.margin>
                               <Insets />
                           </GridPane.margin>
@@ -107,12 +107,12 @@
                            <Insets right="20.0" />
                         </padding>
                      </Label>
-                     <TextField fx:id="adminName" prefHeight="26.0" prefWidth="268.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <TextField fx:id="adminName" onAction="#handleLogin" prefHeight="26.0" prefWidth="268.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                         <GridPane.margin>
                            <Insets />
                         </GridPane.margin>
                      </TextField>
-                     <PasswordField fx:id="adminPass" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <PasswordField fx:id="adminPass" onAction="#handleLogin" GridPane.columnIndex="1" GridPane.rowIndex="2">
                         <GridPane.margin>
                            <Insets />
                         </GridPane.margin>
