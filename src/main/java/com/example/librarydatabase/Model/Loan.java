@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Random;
 
 public class Loan {
-    private int loanID;
-    private int bookID;
-    private String title;
+    private final int loanID;
+    private final int bookID;
+    private final String title;
     private String username;
     private Date borrowDate;
     private Date returnDate;
@@ -48,6 +48,9 @@ public class Loan {
 
     public String getUsername() {
         return username;
+    }
+    public void setUsername(String newUsername){
+        username = newUsername;
     }
 
     private int generateLoanID(Library library) {

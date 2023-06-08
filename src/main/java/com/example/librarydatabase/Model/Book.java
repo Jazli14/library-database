@@ -3,7 +3,7 @@ package com.example.librarydatabase.Model;
 import java.text.DecimalFormat;
 
 public class Book {
-    private int bookID;
+    private final int bookID;
     private String title;
     private String author;
     private double rating;
@@ -30,24 +30,37 @@ public class Book {
     public String getAuthor() {
         return author;
     }
+    public void setAuthor(String newAuthor){
+        author = newAuthor;
+    }
+
     public String getTitle() {
         return title;
     }
-//    public void setTitle(String newTitle){
-//        title = newTitle;
-//    }
+    public void setTitle(String newTitle){
+        title = newTitle;
+    }
     public double getRating(){
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         String rounded = decimalFormat.format(rating);
         return Double.parseDouble(rounded);
     }
+    public void setRating(double newRating){
+        rating = newRating;
+    }
 
     public int getNum_pages() {
         return num_pages;
     }
+    public void setLength(int newLength){
+        num_pages = newLength;
+    }
 
     public int getYear(){
         return year;
+    }
+    public void setYear(int newYear) {
+        year = newYear;
     }
     public boolean getAvailability(){
         return availability;

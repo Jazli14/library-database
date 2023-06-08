@@ -2,61 +2,78 @@ package com.example.librarydatabase.Controller;
 
 import com.example.librarydatabase.Model.*;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.util.Properties;
 
 
 public class Authenticator extends Controller implements Login {
-    private AccountList accList;
+    private final AccountList accList;
     public Authenticator(){
         // Want to initialize the AccountList to the one on the server, not a blank one
         accList = new AccountList();
         populateAccountList();
     }
     @Override
-    public boolean processLogin(String username, String password, boolean admin){
+    public LoginScenario processLogin(String username, String password, boolean admin){
         Member returningMember = accList.getMember(username);
+        boolean usernameEmpty = username.isEmpty();
+        boolean passwordEmpty = password.isEmpty();
+        // the user exists
+        if (usernameEmpty && passwordEmpty){
+            return LoginScenario.USERNAME_AND_PASSWORD_EMPTY;
+        }
+        else if (usernameEmpty) {
+            return LoginScenario.USERNAME_EMPTY;
+        }
+        else if (passwordEmpty){
+            return LoginScenario.PASSWORD_EMPTY;
+        }
+
         if (returningMember != null){
-            if (returningMember.validPassword(password) && (admin == returningMember.getRole())){
-                System.out.println("WELCOME BACK " + returningMember.getUsername());
-                return true;
-            }
-            else {
-                System.out.println("???? what happened");
-                return false;
+            if ((admin == returningMember.getRole())){
+                if (returningMember.validPassword(password)){
+                    System.out.println("Welcome back " + returningMember.getUsername());
+                    return null;
+                }
+                else {
+                    return LoginScenario.USERNAME_PASSWORD_MISMATCH;
+                }
             }
         }
-        else {
-            System.out.println("NO ONE'S NAMED THAT DUMMY");
-            return false;
-        }
+        return LoginScenario.USERNAME_NOT_FOUND;
     }
 
     public AccountList getAccList(){
         return accList;
     }
-    public boolean processRegistration(String username, String password, boolean isAdmin){
-        boolean isValid = !accList.memberExists(username) && !(username.isEmpty() || password.isEmpty());
+    public LoginScenario processRegistration(String username, String password, boolean isAdmin){
+        boolean usernameTaken = accList.memberExists(username);
+        boolean usernameEmpty = username.isEmpty();
+        boolean passwordEmpty = password.isEmpty();
 
-        if (isAdmin && isValid){
+        if (isAdmin && !usernameTaken && !usernameEmpty && !passwordEmpty){
             Admin newAdmin = new Admin(username, password);
             accList.add(newAdmin);
             updateDatabase(newAdmin, password);
-            System.out.println("ADDED NEW Admin: " + newAdmin.getUsername());
         }
-        else if (isValid) {
+        else if (!usernameTaken && !usernameEmpty && !passwordEmpty) {
             User newUser = new User(username, password);
             accList.add(newUser);
             updateDatabase(newUser, password);
-            System.out.println("ADDED NEW User: " + newUser.getUsername());
+        }
+        else if (usernameEmpty && passwordEmpty){
+            return LoginScenario.USERNAME_AND_PASSWORD_EMPTY;
+        }
+        else if (usernameEmpty){
+            return LoginScenario.USERNAME_EMPTY;
+        }
+        else if (passwordEmpty){
+            return LoginScenario.PASSWORD_EMPTY;
         }
         else {
-            System.out.println("Choose a new username");
-            return false;
+            return LoginScenario.USERNAME_TAKEN;
         }
-        return true;
+        return LoginScenario.REGISTRATION_SUCCESS;
     }
 
     private void populateAccountList(){

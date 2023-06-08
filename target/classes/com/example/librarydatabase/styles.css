@@ -5,19 +5,12 @@
     /* ... */
 }
 
-.buttonOne {
-    /* Styles for buttonOne */
-    -fx-border-color: rgba(100, 100, 100, 1);
-    -fx-border-width: 0px;
-    -fx-border-radius: 16px;
-    -fx-translate-x: 0px;
-    -fx-translate-y: 0px;
-    -fx-background-color: rgba(32, 0, 240, 0.5);
-    -fx-background-radius: 16px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 0px, 0px, 0px, 65px, 18px);
-    /* Additional styles specific to buttonOne */
-    -fx-font: 44px "Brush Script";
-    -fx-letter-spacing: 0px;
+.table-view .column-header .label {
+    -fx-font-size: 16px;
+}
+
+.table-view .table.cell {
+    -fx-font-size: 14px;
 }
 
 .tab-pane {
