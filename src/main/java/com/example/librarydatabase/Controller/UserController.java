@@ -111,8 +111,8 @@ public class UserController extends MasterController {
         }
     }
 
-    public void setUserAndPopulate(Member member){
-        client = (User) member;
+    public void setUserAndPopulate(Account account){
+        client = (User) account;
         populateLibrary(client);
     }
 

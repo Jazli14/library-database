@@ -2,7 +2,7 @@ package com.example.librarydatabase.Model;
 
 import java.sql.Date;
 
-public class Admin extends Member{
+public class Admin extends Account {
     public Admin(String username, String password){
         super(username, password);
         setAdmin(true);
@@ -37,6 +37,7 @@ public class Admin extends Member{
 
     public Loan createLoan(Library library, int bookID, String title, String username, Date borrowDate,
                            Date returnDate, boolean overdueStatus){
+
         Loan newLoan = new Loan(library, bookID, title, username, borrowDate, returnDate, overdueStatus);
         library.addLoan(newLoan);
         System.out.println("Successfully added a new loan of ID " + newLoan.getLoanID());
@@ -55,6 +56,17 @@ public class Admin extends Member{
             return null;
         }
     }
+
+    public Account removeAccount(Library library, String username){
+        Account removedAccount = library.removeAccount(username);
+            System.out.println("Removed account successfully.");
+            return removedAccount;
+    }
+
+    public Account createAccount(Library library, String username, String password, boolean admin){
+        return library.addAccount(username, password, admin);
+    }
+
 
     public void editBookTitle(Library library, int bookID, String newTitle){
         library.getBook(bookID).setTitle(newTitle);

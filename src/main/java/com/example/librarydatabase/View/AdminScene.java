@@ -103,6 +103,31 @@ public class AdminScene extends Scene implements Initializable {
     @FXML
     private Button searchLoanButton;
 
+    @FXML
+    private TextField searchUsername;
+    @FXML
+    private CheckBox adminCheck;
+    @FXML
+    private Button searchAccountButton;
+    @FXML
+    private TableView<Account> adminAccountTable;
+    @FXML
+    private TableColumn<Account, String> adminAccountUsername;
+    @FXML
+    private TableColumn<Account, String> adminAccountPassword;
+    @FXML
+    private TableColumn<Account, Boolean> adminAccountAdmin;
+    @FXML
+    private Button accountLogoutButton;
+    @FXML
+    private Button removeAccount;
+    @FXML
+    private Button createAccount;
+    @FXML
+    private Button searchAccountReset;
+
+
+
     private Stage stage;
     private static final AdminController adminController = new AdminController();
 
@@ -140,14 +165,27 @@ public class AdminScene extends Scene implements Initializable {
                     borrowDate, returnDate, overdue);
         }
 
-        if (potentialID != 0){
+        if (potentialID != 0 && potentialID != 1 && potentialID != 2 && potentialID != 3){
             String returnedID = Integer.toString(potentialID);
 
             showAlert(AdminScenario.LOAN_CREATION_SUCCESS, "Successfully created loan #" +
                      returnedID +  ".");
         }
+        else if (potentialID == 0) {
+            showAlert(AdminScenario.LOAN_CREATION_FAILURE, "Loan creation failed. " +
+                    "Something went wrong and the loan could not be created.");
+        }
+        else if (potentialID == 1){
+            showAlert(AdminScenario.LOAN_CREATION_FAILURE, "Loan creation failed. " +
+                    "That username does not exist.");
+        }
+        else if (potentialID == 2) {
+            showAlert(AdminScenario.LOAN_CREATION_FAILURE, "Loan creation failed. " +
+                    "Loans cannot be placed under an admin");
+        }
         else {
-            showAlert(AdminScenario.LOAN_CREATION_FAILURE, "Loan creation failed.");
+            showAlert(AdminScenario.LOAN_CREATION_FAILURE, "Loan creation failed. " +
+                    "Existing Book IDs need to remain consistent with its corresponding title.");
         }
 
 
@@ -176,6 +214,19 @@ public class AdminScene extends Scene implements Initializable {
         }
     }
 
+    public static void handleAccountData(String username, String password, boolean admin) {
+        String potentialUsername = adminController.processCreateAccount(username, password, admin);
+
+        if (potentialUsername != null){
+            showAlert(AdminScenario.ACCOUNT_CREATE_SUCCESS, "Successfully created account: " +
+                    potentialUsername +  ".");
+        }
+        else {
+            showAlert(AdminScenario.ACCOUNT_CREATE_FAILURE, "Loan creation failed.");
+        }
+
+    }
+
 
     @FXML
     public void setStage(Stage stage){
@@ -195,10 +246,10 @@ public class AdminScene extends Scene implements Initializable {
     }
 
     public void initializeAdminController(AccountList accList, String username){
-        adminController.setAdminAndPopulate(accList.getMember(username));
-        populateTableView(true, adminSearchTable, adminController, adminBookID);
-        populateTableView(false, adminLoanTable, adminController, adminTableLoanID);
-
+        adminController.setAdminAndPopulate(accList.getAccount(username), accList);
+        populateTableView(0, adminSearchTable, adminController, adminBookID);
+        populateTableView(1, adminLoanTable, adminController, adminTableLoanID);
+        populateTableView(2, adminAccountTable, adminController, adminAccountUsername);
 
     }
     @FXML
@@ -208,7 +259,7 @@ public class AdminScene extends Scene implements Initializable {
         boolean removeBookSuccess = adminController.processRemoveBook(book.getBookID());
 
         if (removeBookSuccess){
-            populateTableView(true, adminSearchTable, adminController, adminBookID);
+            populateTableView(0, adminSearchTable, adminController, adminBookID);
             showAlert(AdminScenario.BOOK_REMOVAL_SUCCESS, "Successfully removed " + book.getTitle() + ".");
         }
         else {
@@ -238,7 +289,7 @@ public class AdminScene extends Scene implements Initializable {
             showAlert(AdminScenario.SEARCH_FAILURE, "Something went wrong and your " +
                     "search couldn't be completed");
         }
-        populateTableView(true, adminSearchTable, adminController, adminTitle);
+        populateTableView(0, adminSearchTable, adminController, adminTitle);
 
     }
 
@@ -273,7 +324,7 @@ public class AdminScene extends Scene implements Initializable {
             showAlert(AdminScenario.SEARCH_FAILURE, "Something went wrong and your " +
                     "search couldn't be completed");
         }
-        populateTableView(false, adminLoanTable, adminController, adminTableLoanID);
+        populateTableView(1, adminLoanTable, adminController, adminTableLoanID);
 
     }
 
@@ -281,10 +332,10 @@ public class AdminScene extends Scene implements Initializable {
     public void handleRemoveLoan(){
         Loan loan = adminLoanTable.getSelectionModel().getSelectedItem();
 
-        boolean removeBookSuccess = adminController.processRemoveLoan(loan.getLoanID());
+        boolean removeLoanSuccess = adminController.processRemoveLoan(loan.getLoanID());
 
-        if (removeBookSuccess){
-            populateTableView(false, adminLoanTable, adminController, adminTableLoanID);
+        if (removeLoanSuccess){
+            populateTableView(1, adminLoanTable, adminController, adminTableLoanID);
             showAlert(AdminScenario.LOAN_REMOVAL_SUCCESS, "Successfully removed #" + loan.getLoanID() + ".");
         }
         else {
@@ -302,7 +353,7 @@ public class AdminScene extends Scene implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/create_book_dialog.fxml"));
         Parent dialogPane = loader.load();
 
-        BookDialog dialogController = loader.getController();
+        CreateBookDialog dialogController = loader.getController();
         dialogController.setDialogStage(dialog);
 
         dialog.setDialogPane((DialogPane) dialogPane);
@@ -329,42 +380,7 @@ public class AdminScene extends Scene implements Initializable {
             }
         }
 
-        populateTableView(true, adminSearchTable, adminController, adminBookID);
-    }
-
-    public static void showAlert(AdminScenario scenario, String userMessage) {
-        Alert alert;
-        if ((scenario != AdminScenario.LOAN_CREATION_SUCCESS && scenario != AdminScenario.BOOK_CREATION_SUCCESS
-                && scenario != AdminScenario.LOAN_REMOVAL_SUCCESS && scenario != AdminScenario.BOOK_REMOVAL_SUCCESS)
-                && scenario != AdminScenario.BOOK_EDIT_SUCCESS && scenario != AdminScenario.LOAN_EDIT_SUCCESS){
-            alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            switch (scenario) {
-                case BOOK_CREATION_FAILURE -> alert.setHeaderText("Book creation was unsuccessful.");
-                case LOAN_CREATION_FAILURE -> alert.setHeaderText("Loan creation was unsuccessful.");
-                case BOOK_REMOVAL_FAILURE -> alert.setHeaderText("Book removal was unsuccessful.");
-                case LOAN_REMOVAL_FAILURE -> alert.setHeaderText("Loan removal was unsuccessful.");
-                case BOOK_EDIT_FAILURE -> alert.setHeaderText("Book edit was unsuccessful");
-                case LOAN_EDIT_FAILURE -> alert.setHeaderText("Loan edit was unsuccessful");
-            }
-        }
-        else {
-            alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
-            switch (scenario) {
-                case BOOK_CREATION_SUCCESS -> alert.setHeaderText("Book creation was successful.");
-                case BOOK_REMOVAL_SUCCESS -> alert.setHeaderText("Book removal was successful.");
-                case LOAN_CREATION_SUCCESS -> alert.setHeaderText("Loan creation was successful.");
-                case LOAN_REMOVAL_SUCCESS -> alert.setHeaderText("Loan removal was successful.");
-                case BOOK_EDIT_SUCCESS -> alert.setHeaderText("Book edit was successful.");
-                case LOAN_EDIT_SUCCESS -> alert.setHeaderText("Loan edit was successful.");
-            }
-        }
-
-        alert.setContentText(userMessage);
-
-        alert.showAndWait();
-
+        populateTableView(0, adminSearchTable, adminController, adminBookID);
     }
 
     @FXML
@@ -405,7 +421,30 @@ public class AdminScene extends Scene implements Initializable {
             }
         }
 
-        populateTableView(true, adminSearchTable, adminController, adminBookID);
+        populateTableView(0, adminSearchTable, adminController, adminBookID);
+    }
+
+
+    @FXML
+    public void handleSearchAccounts() throws SQLException, IOException {
+        String username = searchUsername.getText();
+
+        boolean admin = adminCheck.isSelected();
+
+        boolean successfulSearch = adminController.processSearchAccounts(username, admin, false);
+
+        if (!successfulSearch){
+            showAlert(AdminScenario.SEARCH_FAILURE, "Something went wrong and your " +
+                    "search couldn't be completed");
+        }
+        populateTableView(2, adminAccountTable, adminController, adminAccountUsername);
+
+    }
+
+    @FXML
+    public void handleResetSearchAccounts() throws SQLException, IOException {
+        adminController.processSearchAccounts("", false, true);
+        populateTableView(2, adminAccountTable, adminController, adminAccountUsername);
     }
 
 
@@ -418,7 +457,7 @@ public class AdminScene extends Scene implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/create_loan_dialog.fxml"));
         Parent loanDialogPane = loader.load();
 
-        LoanDialog loanDialogController = loader.getController();
+        CreateLoanDialog loanDialogController = loader.getController();
 
         loanDialogController.setDialogStage(loanDialog);
         loanDialog.setDialogPane((DialogPane) loanDialogPane);
@@ -445,7 +484,7 @@ public class AdminScene extends Scene implements Initializable {
                 loanDialogController.handleOkButton();
             }
 
-            populateTableView(false, adminLoanTable, adminController, adminTableLoanID);
+            populateTableView(1, adminLoanTable, adminController, adminTableLoanID);
 
         }
     }
@@ -487,10 +526,110 @@ public class AdminScene extends Scene implements Initializable {
                 loanDialogController.handleOkButton();
             }
 
-            populateTableView(false, adminLoanTable, adminController, adminTableLoanID);
+            populateTableView(1, adminLoanTable, adminController, adminTableLoanID);
 
         }
     }
+
+    @FXML
+    public void handleCreateAccount() throws IOException {
+        Dialog<ButtonType> dialog = new Dialog<>();
+
+        // Load the dialog's content from an FXML file
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/librarydatabase/create_account_dialog.fxml"));
+        Parent dialogPane = loader.load();
+
+        CreateAccountDialog accountDialogController = loader.getController();
+        accountDialogController.setDialogStage(dialog);
+
+        dialog.setDialogPane((DialogPane) dialogPane);
+
+        // Set the dialog's properties
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(stage);
+
+        // Clear existing button types before adding new ones
+        dialog.getDialogPane().getButtonTypes().clear();
+
+        // Add the desired button types
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+
+        if (result.isPresent()) {
+            if (result.get() == ButtonType.OK) {
+                // handle ok button
+                accountDialogController.handleOkButton();
+            } else if (result.get() == ButtonType.CANCEL) {
+                // handle cancel button
+                accountDialogController.handleCancelButton();
+            }
+        }
+
+        populateTableView(2, adminAccountTable, adminController, adminAccountUsername);
+    }
+
+
+    @FXML
+    public void handleRemoveAccount(){
+        Account account = adminAccountTable.getSelectionModel().getSelectedItem();
+
+        boolean removeBookSuccess = adminController.processRemoveAccount(account.getUsername());
+
+        if (removeBookSuccess){
+            populateTableView(2, adminAccountTable, adminController, adminAccountUsername);
+            populateTableView(1, adminLoanTable, adminController, adminTableLoanID);
+            showAlert(AdminScenario.ACCOUNT_REMOVAL_SUCCESS, "Successfully removed account: " +
+                    account.getUsername() + ".");
+        }
+        else {
+            showAlert(AdminScenario.ACCOUNT_REMOVAL_FAILURE, "Could not remove account: " +
+                    account.getUsername() + ".");
+        }
+
+    }
+
+    public static void showAlert(AdminScenario scenario, String userMessage) {
+        Alert alert;
+        if ((scenario != AdminScenario.LOAN_CREATION_SUCCESS && scenario != AdminScenario.BOOK_CREATION_SUCCESS
+                && scenario != AdminScenario.LOAN_REMOVAL_SUCCESS && scenario != AdminScenario.BOOK_REMOVAL_SUCCESS)
+                && scenario != AdminScenario.BOOK_EDIT_SUCCESS && scenario != AdminScenario.LOAN_EDIT_SUCCESS
+                && scenario != AdminScenario.ACCOUNT_CREATE_SUCCESS && scenario != AdminScenario.ACCOUNT_REMOVAL_SUCCESS){
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            switch (scenario) {
+                case BOOK_CREATION_FAILURE -> alert.setHeaderText("Book creation was unsuccessful.");
+                case LOAN_CREATION_FAILURE -> alert.setHeaderText("Loan creation was unsuccessful.");
+                case BOOK_REMOVAL_FAILURE -> alert.setHeaderText("Book removal was unsuccessful.");
+                case LOAN_REMOVAL_FAILURE -> alert.setHeaderText("Loan removal was unsuccessful.");
+                case BOOK_EDIT_FAILURE -> alert.setHeaderText("Book edit was unsuccessful.");
+                case LOAN_EDIT_FAILURE -> alert.setHeaderText("Loan edit was unsuccessful.");
+                case ACCOUNT_CREATE_FAILURE -> alert.setHeaderText("Account creation was unsuccessful.");
+                case ACCOUNT_REMOVAL_FAILURE -> alert.setHeaderText("Account removal was unsuccessful.");
+            }
+        }
+        else {
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success");
+            switch (scenario) {
+                case BOOK_CREATION_SUCCESS -> alert.setHeaderText("Book creation was successful.");
+                case BOOK_REMOVAL_SUCCESS -> alert.setHeaderText("Book removal was successful.");
+                case LOAN_CREATION_SUCCESS -> alert.setHeaderText("Loan creation was successful.");
+                case LOAN_REMOVAL_SUCCESS -> alert.setHeaderText("Loan removal was successful.");
+                case BOOK_EDIT_SUCCESS -> alert.setHeaderText("Book edit was successful.");
+                case LOAN_EDIT_SUCCESS -> alert.setHeaderText("Loan edit was successful.");
+                case ACCOUNT_CREATE_SUCCESS -> alert.setHeaderText("Account creation was successful.");
+                case ACCOUNT_REMOVAL_SUCCESS -> alert.setHeaderText("Account removal was successful.");
+            }
+        }
+
+        alert.setContentText(userMessage);
+
+        alert.showAndWait();
+
+    }
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -509,6 +648,10 @@ public class AdminScene extends Scene implements Initializable {
         adminLoanReturn.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
         adminLoanOverdue.setCellValueFactory(new PropertyValueFactory<>("isOverdue"));
         adminLoanBorrow.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
+
+        adminAccountUsername.setCellValueFactory(new PropertyValueFactory<>("username"));
+        adminAccountPassword.setCellValueFactory(new PropertyValueFactory<>("password"));
+        adminAccountAdmin.setCellValueFactory(new PropertyValueFactory<>("isAdminRole"));
 
         int maxValue = 2024;
         int minValue = 1900;
@@ -542,7 +685,29 @@ public class AdminScene extends Scene implements Initializable {
         pageCombo.setItems(FXCollections.observableArrayList(
                 "Any", "0-100", "101-200", "201-300", "301-400", "400-500", "More than 500"));
 
+        adminAccountPassword.setCellFactory(column -> {
+            TableCell<Account, String> cell = new TableCell<>() {
+                private final int maxObscuredLength = 10; // Maximum length of obscured password
 
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setTooltip(null);
+                    } else {
+                        StringBuilder obscuredPassword = new StringBuilder();
+                        for (int i = 0; i < maxObscuredLength; i++) {
+                            obscuredPassword.append("•");
+                        }
+                        setText(obscuredPassword.toString());
+                        Tooltip tooltip = new Tooltip(item);
+                        setTooltip(tooltip);
+                    }
+                }
+            };
+            return cell;
+        });
     }
 }
 

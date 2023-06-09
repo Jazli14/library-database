@@ -11,7 +11,7 @@ import java.sql.Date;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
-public class LoanDialog implements Initializable {
+public class CreateLoanDialog implements Initializable {
     @FXML
     private TextField bookIDInput;
 

@@ -10,7 +10,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
-public class BookDialog implements Initializable {
+public class CreateBookDialog implements Initializable {
     @FXML
     private TextField authorInput;
 

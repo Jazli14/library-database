@@ -9,6 +9,7 @@ import java.util.Map;
 public class Library {
     private final Map<Integer, Book> books;
     private final Map<Integer, Loan> loans;
+    private AccountList accountList;
     public UserController userController;
     public AdminController adminController;
 
@@ -57,8 +58,46 @@ public class Library {
         return loans.get(loanID);
     }
 
+    public Account removeAccount(String username) { return accountList.removeAccount(username);}
+
+    public Account addAccount(String username, String password, boolean admin) {
+        boolean usernameTaken = accountList.accountExists(username);
+        if (!usernameTaken && admin){
+            Admin newAdmin = new Admin(username, password);
+            accountList.add(newAdmin);
+            return newAdmin;
+        }
+        else if (!usernameTaken){
+            User newUser = new User(username, password);
+            accountList.add(newUser);
+            return newUser;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public void clearAccountsList(){
+        accountList.clearAccounts();
+    }
+
+    public boolean containsAccount(String username) {
+        return accountList.accountExists(username);
+    }
+
     public Map<Integer, Loan> getLoans(){
         return loans;
+    }
+
+    public Map<String, Account> getAccounts() {
+        return accountList.getAccounts();
+    }
+
+    public Account retrieveAccount(String username) {
+        return accountList.getAccount(username);
+    }
+    public void setAccounts (AccountList accList) {
+        this.accountList = accList;
     }
 
 

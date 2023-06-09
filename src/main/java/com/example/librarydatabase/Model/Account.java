@@ -3,12 +3,12 @@ package com.example.librarydatabase.Model;
 import java.io.Serializable;
 
 
-public abstract class Member implements Serializable {
+public abstract class Account implements Serializable {
     private final String username;
     private final String password;
     private boolean isAdminRole;
 
-    public Member(String username, String password){
+    public Account(String username, String password){
         this.username = username;
         this.password = password;
     }
@@ -23,9 +23,10 @@ public abstract class Member implements Serializable {
     protected void setAdmin(boolean adminOrUser) {
         this.isAdminRole = adminOrUser;
     }
-    public boolean getRole(){
+    public boolean getIsAdminRole(){
         return isAdminRole;
     }
 
+    public String getPassword() { return password; }
 
 }

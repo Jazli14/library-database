@@ -4,16 +4,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AccountList {
-    private Map<String, Member> accounts = new HashMap<>();
-    public void add(Member member) {
-        accounts.put(member.getUsername(), member);
+    private final Map<String, Account> accounts = new HashMap<>();
+    public void add(Account account) {
+        accounts.put(account.getUsername(), account);
     }
 
-    public Member getMember(String username) {
+    public Account getAccount(String username) {
         return accounts.get(username);
     }
+    public Account removeAccount(String username) {
+        return accounts.remove(username);
+    }
 
-    public boolean memberExists(String username) {
+    public boolean accountExists(String username) {
         return accounts.containsKey(username);
     }
+    public Map<String, Account> getAccounts(){ return accounts; }
+
+    public void clearAccounts() { accounts.clear();}
 }

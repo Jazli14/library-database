@@ -3,7 +3,7 @@ package com.example.librarydatabase.Controller;
 import com.example.librarydatabase.Model.Book;
 import com.example.librarydatabase.Model.Library;
 import com.example.librarydatabase.Model.Loan;
-import com.example.librarydatabase.Model.Member;
+import com.example.librarydatabase.Model.Account;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,7 +28,7 @@ public abstract class MasterController {
     }
 
 
-    public void populateLibrary(Member client){
+    public void populateLibrary(Account client){
         try {
             Class.forName("org.postgresql.Driver");
         }
@@ -59,19 +59,19 @@ public abstract class MasterController {
                 }
             }
 
-            if (!client.getRole()) {
+            if (!client.getIsAdminRole()) {
                 String selectLoans = "SELECT loan_id, book_id, title, borrower, borrow_date, return_date, overdue " +
                         "FROM loans2 WHERE borrower = ?";
                 try (PreparedStatement statement = connection.prepareStatement(selectLoans)) {
                     statement.setString(1, client.getUsername());
-                    executeSQLQuery(statement);
+                    executeLoanQuery(statement);
                 }
             }
             else {
                 String selectLoans = "SELECT loan_id, book_id, title, borrower, borrow_date, return_date, overdue " +
                         "FROM loans2";
                 try (PreparedStatement statement = connection.prepareStatement(selectLoans)) {
-                    executeSQLQuery(statement);
+                    executeLoanQuery(statement);
                 }
             }
 
@@ -83,7 +83,7 @@ public abstract class MasterController {
 
     }
 
-    private void executeSQLQuery(PreparedStatement statement) throws SQLException {
+    private void executeLoanQuery(PreparedStatement statement) throws SQLException {
         try (ResultSet loansResultSet = statement.executeQuery()) {
             while (loansResultSet.next()) {
                 int loanID = loansResultSet.getInt("loan_id");
