@@ -5,8 +5,9 @@ import com.example.librarydatabase.Model.*;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.Objects;
 
-public class UserController extends Controller {
+public class UserController extends MasterController {
     private User client;
     public UserController(){
         library = new Library(this);
@@ -35,8 +36,36 @@ public class UserController extends Controller {
         else {
             return false;
         }
+    }
 
+    public boolean processSearch(String title, String author, boolean minOrMax, double rating, String lengthRange,
+                              Integer year, boolean ready) throws SQLException, IOException {
+        int minRange;
+        int maxRange;
+        if (lengthRange != null) {
+            if (lengthRange.equals("More than 500")) {
+                minRange = 501;
+                maxRange = -1;
+            }
+            else if (lengthRange.equals("Any")){
+                minRange = -1;
+                maxRange = -1;
+            }
+            else {
+                String[] rangeValues = lengthRange.split("-");
+                minRange = Integer.parseInt(rangeValues[0]);
+                maxRange = Integer.parseInt(rangeValues[1]);
 
+            }
+        }
+        else {
+            minRange = -1;
+            maxRange = -1;
+        }
+
+        int intYear;
+        intYear = Objects.requireNonNullElse(year, -1);
+        return searchBooks(title, author, minOrMax, rating, minRange, maxRange, intYear, ready);
     }
 
     public void updateBookStatus(int bookID, boolean status) {

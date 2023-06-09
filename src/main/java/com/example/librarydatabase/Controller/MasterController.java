@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.Properties;
 
-public abstract class Controller {
+public abstract class MasterController {
     public Library library;
 
-    protected static Connection establishConnection() throws IOException, SQLException {
+    public static Connection establishConnection() throws IOException, SQLException {
         Properties props = new Properties();
         try (FileInputStream fis = new FileInputStream(
                 "src/main/java/com/example/librarydatabase/Controller/config.properties")) {
@@ -102,4 +102,112 @@ public abstract class Controller {
         }
     }
 
+
+    public boolean searchBooks(String title, String author, boolean minOrMax, double rating,
+                               int minLength, int maxLength, int year, boolean ready) throws SQLException, IOException {
+        library.clearBooks();
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (java.lang.ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+
+        StringBuilder selectBooks = new StringBuilder("SELECT * FROM available2 WHERE 1=1");
+
+
+        if (!title.isEmpty()) {
+            selectBooks.append(" AND LOWER(title) LIKE LOWER(?)");
+        }
+
+        if (!author.isEmpty()) {
+            selectBooks.append(" AND LOWER(authors) LIKE LOWER(?)");
+        }
+
+
+        if (!(minLength == -1 && maxLength == -1)) {
+            if (maxLength == -1) {
+                selectBooks.append(" AND num_pages > 500");
+            } else {
+                selectBooks.append(" AND num_pages BETWEEN ? AND ?");
+            }
+
+        }
+
+        if (year != -1) {
+            selectBooks.append(" AND year = ?");
+        }
+
+        boolean searchCriteriaExists = !title.isEmpty() || !author.isEmpty() || (minLength != -1 && maxLength != -1) || year != -1
+                || minOrMax || rating != 0.0 || ready;
+        if (searchCriteriaExists){
+            selectBooks.append(" AND ready = ?");
+        }
+        if (!minOrMax) {
+            // False = min
+            selectBooks.append(" AND rating >= ?");
+        } else {
+            selectBooks.append(" AND rating <= ?");
+
+        }
+
+
+        String query = selectBooks.toString();
+
+        try (Connection connection = establishConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+
+                int parameterIndex = 1;
+
+                if (!title.isEmpty()) {
+                    statement.setString(parameterIndex++, "%" + title.toLowerCase() + "%");
+                }
+
+                if (!author.isEmpty()) {
+                    statement.setString(parameterIndex++, "%" + author.toLowerCase() + "%");
+                }
+
+
+                if (minLength != -1 && maxLength != -1) {
+
+                    statement.setInt(parameterIndex++, minLength);
+                    statement.setInt(parameterIndex++, maxLength);
+                }
+
+                if (year != -1) {
+                    statement.setInt(parameterIndex++, year);
+                }
+
+                if (searchCriteriaExists){
+                    statement.setBoolean(parameterIndex++, ready);
+                }
+
+                statement.setDouble(parameterIndex, rating);
+
+                ResultSet resultSet = statement.executeQuery();
+
+                // Process the search results
+                while (resultSet.next()) {
+                    // Retrieve data from the result set
+                    int bookID = resultSet.getInt("book_id");
+                    String bookTitle = resultSet.getString("title");
+                    double bookRating = resultSet.getDouble("rating");
+                    String bookAuthor = resultSet.getString("authors");
+                    int bookNumPages = resultSet.getInt("num_pages");
+                    int bookYear = resultSet.getInt("year");
+                    boolean bookAvailability = resultSet.getBoolean("ready");
+                    Book newBook = new Book(bookID, bookTitle, bookAuthor,
+                            bookRating, bookNumPages, bookYear, bookAvailability);
+                    library.addBook(newBook);
+
+                }
+                return true;
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        return false;
+    }
 }

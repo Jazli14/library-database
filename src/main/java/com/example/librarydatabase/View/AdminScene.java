@@ -3,6 +3,7 @@ package com.example.librarydatabase.View;
 import com.example.librarydatabase.Controller.AdminController;
 import com.example.librarydatabase.Controller.AdminScenario;
 import com.example.librarydatabase.Model.*;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,10 +16,13 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AdminScene extends Scene implements Initializable {
+    public Button editLoan;
     @FXML
     private TableView<Book> adminSearchTable;
     @FXML
@@ -63,6 +67,42 @@ public class AdminScene extends Scene implements Initializable {
     private Button createLoan;
     @FXML
     private Button removeLoan;
+
+    @FXML
+    private TextField searchField;
+    @FXML
+    private RadioButton minRadio;
+    @FXML
+    private RadioButton maxRadio;
+    @FXML
+    private ToggleGroup MinMax;
+    @FXML
+    private Slider ratingSlider;
+    @FXML
+    private ComboBox<String> pageCombo;
+    @FXML
+    private Spinner<Integer> yearSpinner;
+    @FXML
+    private CheckBox availableCheck;
+    @FXML
+    private TextField searchFieldAuthor;
+    @FXML
+    private Button editBook;
+    @FXML
+    private Button searchButton;
+    @FXML
+    private TextField searchLoanTitle;
+    @FXML
+    private TextField searchFieldBorrow;
+    @FXML
+    private DatePicker borrowDateSearch;
+    @FXML
+    private DatePicker returnDateSearch;
+    @FXML
+    private CheckBox overdueCheck;
+    @FXML
+    private Button searchLoanButton;
+
     private Stage stage;
     private static final AdminController adminController = new AdminController();
 
@@ -175,6 +215,65 @@ public class AdminScene extends Scene implements Initializable {
             System.out.println("Could not remove " + book.getTitle());
             showAlert(AdminScenario.BOOK_REMOVAL_FAILURE, "Successfully removed " + book.getTitle() + ".");
         }
+
+    }
+
+    @FXML
+    public void handleSearchBooks() throws SQLException, IOException {
+        String author = searchFieldAuthor.getText();
+        String pageLength = pageCombo.getValue();
+        String title = searchField.getText();
+
+        Integer year = yearSpinner.getValue();
+        boolean availability = availableCheck.isSelected();
+
+        RadioButton selectedButton = (RadioButton) MinMax.getSelectedToggle();
+        boolean minOrMax = (selectedButton == minRadio);
+        double rating = ratingSlider.getValue();
+
+        boolean successfulSearch = adminController.processSearchBooks(title, author, minOrMax, rating,
+                pageLength, year, availability);
+
+        if (!successfulSearch){
+            showAlert(AdminScenario.SEARCH_FAILURE, "Something went wrong and your " +
+                    "search couldn't be completed");
+        }
+        populateTableView(true, adminSearchTable, adminController, adminTitle);
+
+    }
+
+    @FXML
+    public void handleSearchLoans() throws SQLException, IOException {
+        String borrower = searchFieldBorrow.getText();
+        String title = searchLoanTitle.getText();
+
+        boolean overdue = overdueCheck.isSelected();
+
+        Date sqlBorrowDate;
+        Date sqlReturnDate;
+        if (borrowDateSearch.getValue() != null){
+            LocalDate startDate = borrowDateSearch.getValue();
+            sqlBorrowDate = java.sql.Date.valueOf(startDate);
+        }
+        else {
+            sqlBorrowDate = null;
+        }
+        if (returnDateSearch.getValue() != null){
+            LocalDate endDate = returnDateSearch.getValue();
+            sqlReturnDate = java.sql.Date.valueOf(endDate);
+        }
+        else{
+            sqlReturnDate = null;
+        }
+
+        boolean successfulSearch = adminController.processSearchLoans(title, borrower, sqlBorrowDate, sqlReturnDate,
+                overdue);
+
+        if (!successfulSearch){
+            showAlert(AdminScenario.SEARCH_FAILURE, "Something went wrong and your " +
+                    "search couldn't be completed");
+        }
+        populateTableView(false, adminLoanTable, adminController, adminTableLoanID);
 
     }
 
@@ -407,9 +506,42 @@ public class AdminScene extends Scene implements Initializable {
         adminTableBookID.setCellValueFactory(new PropertyValueFactory<>("bookID"));
         adminLoanTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         adminLoanUsername.setCellValueFactory(new PropertyValueFactory<>("username"));
-        adminLoanBorrow.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
         adminLoanReturn.setCellValueFactory(new PropertyValueFactory<>("returnDate"));
         adminLoanOverdue.setCellValueFactory(new PropertyValueFactory<>("isOverdue"));
+        adminLoanBorrow.setCellValueFactory(new PropertyValueFactory<>("borrowDate"));
+
+        int maxValue = 2024;
+        int minValue = 1900;
+
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory
+                .IntegerSpinnerValueFactory(minValue, maxValue) {
+            @Override
+            public void increment(int steps) {
+                Integer value = getValue();
+                if (value == null) {
+                    setValue(minValue);
+                } else {
+                    super.increment(steps);
+                }
+            }
+
+            @Override
+            public void decrement(int steps) {
+                Integer value = getValue();
+                if (value == null) {
+                    setValue(maxValue);
+                } else {
+                    super.decrement(steps);
+                }
+            }
+        };
+
+        yearSpinner.setValueFactory(valueFactory);
+        yearSpinner.getValueFactory().setValue(null);
+
+        pageCombo.setItems(FXCollections.observableArrayList(
+                "Any", "0-100", "101-200", "201-300", "301-400", "400-500", "More than 500"));
+
 
     }
 }

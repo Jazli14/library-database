@@ -1,5 +1,5 @@
 package com.example.librarydatabase.Controller;
 
-public class CreateBook extends Controller {
+public class CreateBook extends MasterController {
 
 }

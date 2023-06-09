@@ -9,7 +9,7 @@ import java.util.Map;
 public class Library {
     private final Map<Integer, Book> books;
     private final Map<Integer, Loan> loans;
-    public UserController userController;   // mm
+    public UserController userController;
     public AdminController adminController;
 
     public Library(UserController userController){
@@ -24,6 +24,12 @@ public class Library {
     }
     public void addBook(Book book) {
         books.put(book.getBookID(), book);
+    }
+    public void clearBooks(){
+        books.clear();
+    }
+    public void clearLoans(){
+        loans.clear();
     }
 
     public Book removeBook(int bookID) {

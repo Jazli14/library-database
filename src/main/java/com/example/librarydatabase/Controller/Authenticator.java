@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.sql.*;
 
 
-public class Authenticator extends Controller implements Login {
+public class Authenticator extends MasterController implements Login {
     private final AccountList accList;
     public Authenticator(){
         // Want to initialize the AccountList to the one on the server, not a blank one

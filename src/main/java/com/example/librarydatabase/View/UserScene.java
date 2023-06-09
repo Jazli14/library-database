@@ -12,6 +12,7 @@ import javafx.scene.control.cell.*;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
@@ -36,8 +37,6 @@ public class UserScene extends Scene implements Initializable {
     @FXML
     private Button loanButton;
     @FXML
-    private TextField searchField;
-    @FXML
     private DatePicker returnDatePicker;
     @FXML
     private DatePicker borrowDatePicker;
@@ -52,6 +51,8 @@ public class UserScene extends Scene implements Initializable {
     private TableColumn<Loan, Date> loanReturn;
     @FXML
     private TableColumn<Loan, Boolean> loanOverdue;
+    @FXML
+    private TextField searchField;
     @FXML
     private RadioButton minRadio;
     @FXML
@@ -83,7 +84,7 @@ public class UserScene extends Scene implements Initializable {
     }
     @FXML
     public void handleBorrow() {
-        // get selected book, get selected dates boom
+        // get selected book, get selected dates
         // GUI happens
         Book selectedBook = searchTable.getSelectionModel().getSelectedItem();
         LocalDate startDate = borrowDatePicker.getValue();
@@ -140,7 +141,12 @@ public class UserScene extends Scene implements Initializable {
 
     public void showAlert(UserScenario scenario, String userMessage) {
         Alert alert;
-        if ((scenario != UserScenario.LOAN_SUCCESS && scenario != UserScenario.RETURN_SUCCESS)){
+        if (scenario == UserScenario.SEARCH_FAILURE){
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Search was unsuccessful.");
+        }
+        else if ((scenario != UserScenario.LOAN_SUCCESS && scenario != UserScenario.RETURN_SUCCESS)){
             alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             if (scenario == UserScenario.RETURN_FAILURE){
@@ -167,7 +173,7 @@ public class UserScene extends Scene implements Initializable {
 
     }
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle){
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         searchTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         searchAuthor.setCellValueFactory(new PropertyValueFactory<>("author"));
         searchRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
@@ -181,19 +187,61 @@ public class UserScene extends Scene implements Initializable {
         loanOverdue.setCellValueFactory(new PropertyValueFactory<>("isOverdue"));
 
         int minValue = 1900;
-        int maxValue = 2020;
-        int initialValue = 2000;
+        int maxValue = 2024;
 
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory
-                .IntegerSpinnerValueFactory(minValue, maxValue, initialValue);
+                .IntegerSpinnerValueFactory(minValue, maxValue){
+            @Override
+            public void increment(int steps) {
+                Integer value = getValue();
+                if (value == null) {
+                    setValue(minValue);
+                } else {
+                    super.increment(steps);
+                }
+            }
+
+            @Override
+            public void decrement(int steps) {
+                Integer value = getValue();
+                if (value == null) {
+                    setValue(maxValue);
+                } else {
+                    super.decrement(steps);
+                }
+            }
+        };
 
         yearSpinner.setValueFactory(valueFactory);
+        yearSpinner.getValueFactory().setValue(null);
 
         pageCombo.setItems(FXCollections.observableArrayList(
-                "0-100", "101-200", "201-300", "301-400", "400-500", "More than 500"));
-
-
+                "Any", "0-100", "101-200", "201-300", "301-400", "400-500", "More than 500"));
     }
+
+    @FXML
+    public void handleSearch() throws SQLException, IOException {
+        String title = searchField.getText();
+        String author = searchFieldAuthor.getText();
+        String pageLength = pageCombo.getValue();
+
+        Integer year = yearSpinner.getValue();
+        boolean availability = availableCheck.isSelected();
+
+        RadioButton selectedButton = (RadioButton) MinMax.getSelectedToggle();
+        boolean minOrMax = (selectedButton == minRadio);
+        double rating = ratingSlider.getValue();
+
+        boolean successfulSearch = userController.processSearch(title, author, minOrMax, rating,
+                pageLength, year, availability);
+
+        if (!successfulSearch){
+            showAlert(UserScenario.SEARCH_FAILURE, "Something went wrong and your " +
+                    "search couldn't be completed");
+        }
+        populateTableView(true, searchTable, userController, searchTitle);
+    }
+
     public void setStage(Stage stage) {
         this.stage = stage;
     }

@@ -2,6 +2,7 @@ package com.example.librarydatabase.Model;
 
 import java.io.Serializable;
 
+
 public abstract class Member implements Serializable {
     private final String username;
     private final String password;
