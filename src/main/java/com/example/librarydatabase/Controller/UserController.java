@@ -5,8 +5,9 @@ import com.example.librarydatabase.Model.*;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.Objects;
 
-public class UserController extends Controller {
+public class UserController extends MasterController {
     private User client;
     public UserController(){
         library = new Library(this);
@@ -37,40 +38,34 @@ public class UserController extends Controller {
         }
     }
 
-    public void search(String book){
-        try {
-            Class.forName("org.postgresql.Driver");
-        }
-        catch (java.lang.ClassNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
+    public boolean processSearch(String title, String author, boolean minOrMax, double rating, String lengthRange,
+                              Integer year, boolean ready) throws SQLException, IOException {
+        int minRange;
+        int maxRange;
+        if (lengthRange != null) {
+            if (lengthRange.equals("More than 500")) {
+                minRange = 501;
+                maxRange = -1;
+            }
+            else if (lengthRange.equals("Any")){
+                minRange = -1;
+                maxRange = -1;
+            }
+            else {
+                String[] rangeValues = lengthRange.split("-");
+                minRange = Integer.parseInt(rangeValues[0]);
+                maxRange = Integer.parseInt(rangeValues[1]);
 
-        String selectBooks = "SELECT available2.book_id, available2.title, available2.authors, available2.rating, available2.num_pages, available2.year, available2.ready FROM available2" +
-                "WHERE name LIKE ?";
-        try (Connection connection = establishConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement(selectBooks)) {
-                statement.setString(1, "%" + book + "%");
-                try (ResultSet booksResultSet = statement.executeQuery()) {
-                    while (booksResultSet.next()) {
-                        int bookID = booksResultSet.getInt("book_id");
-                        String bookTitle = booksResultSet.getString("title");
-                        String bookAuthor = booksResultSet.getString("authors");
-                        double bookRating = booksResultSet.getDouble("rating");
-                        int bookPages = booksResultSet.getInt("num_pages");
-                        int bookYear = booksResultSet.getInt("year");
-                        boolean availability = booksResultSet.getBoolean("ready");
-
-                    }
-                    // Close the resources
-                    booksResultSet.close();
-                    statement.close();
-                    connection.close();
-                }
             }
         }
-        catch (SQLException | IOException e) {
-            e.printStackTrace();
+        else {
+            minRange = -1;
+            maxRange = -1;
         }
+
+        int intYear;
+        intYear = Objects.requireNonNullElse(year, -1);
+        return searchBooks(title, author, minOrMax, rating, minRange, maxRange, intYear, ready);
     }
 
     public void updateBookStatus(int bookID, boolean status) {

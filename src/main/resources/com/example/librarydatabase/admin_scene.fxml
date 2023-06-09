@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Slider?>
@@ -34,7 +35,7 @@
                         <HBox.margin>
                             <Insets right="5.0" />
                         </HBox.margin>
-                        <TextField fx:id="searchField" promptText="Find a book..." VBox.vgrow="ALWAYS">
+                        <TextField fx:id="searchField" onAction="#handleSearchBooks" promptText="Find a book..." VBox.vgrow="ALWAYS">
                             <font>
                                 <Font size="13.0" />
                             </font>
@@ -42,7 +43,7 @@
                                 <Insets />
                             </VBox.margin>
                         </TextField>
-                        <TextField fx:id="searchFieldAuthor" promptText="Enter author name..">
+                        <TextField fx:id="searchFieldAuthor" onAction="#handleSearchBooks" promptText="Enter author name..">
                             <font>
                                 <Font size="13.0" />
                             </font>
@@ -61,12 +62,11 @@
                             </font>
                         </Label>
                         <HBox alignment="CENTER" spacing="20.0">
-                            <RadioButton fx:id="minRadio" mnemonicParsing="false" selected="true" text="MIN">
-                                <toggleGroup>
+                            <RadioButton fx:id="minRadio" mnemonicParsing="false" selected="true" text="MIN" />
+                            <RadioButton fx:id="maxRadio" mnemonicParsing="false" text="MAX">
+                        <toggleGroup>
                                     <ToggleGroup fx:id="MinMax" />
-                                </toggleGroup>
-                            </RadioButton>
-                            <RadioButton fx:id="maxRadio" mnemonicParsing="false" text="MAX" toggleGroup="$MinMax" />
+                        </toggleGroup></RadioButton>
                         </HBox>
                         <Slider fx:id="ratingSlider" blockIncrement="0.01" majorTickUnit="1.0" max="5.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true">
                             <VBox.margin>
@@ -94,28 +94,26 @@
                         </HBox.margin>
                     </VBox>
                     <VBox alignment="CENTER">
-                        <children>
-                            <CheckBox fx:id="availableCheck" alignment="CENTER" mnemonicParsing="false" text="Loanable" textAlignment="CENTER">
-                                <font>
-                                    <Font size="14.0" />
-                                </font>
-                                <padding>
-                                    <Insets right="10.0" />
-                                </padding>
-                            </CheckBox>
-                        </children>
+                        <CheckBox fx:id="availableCheck" alignment="CENTER" mnemonicParsing="false" text="Loanable"
+                                  textAlignment="CENTER">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                            <padding>
+                                <Insets right="10.0"/>
+                            </padding>
+                        </CheckBox>
                     </VBox>
                     <HBox alignment="CENTER" prefWidth="92.0">
-                        <children>
-                            <Button fx:id="searchButton" mnemonicParsing="false" text="Search">
-                                <font>
-                                    <Font name="Symbol" size="21.0" />
-                                </font>
-                            </Button>
-                        </children>
                         <HBox.margin>
-                            <Insets right="-15.0" />
+                            <Insets right="-15.0"/>
                         </HBox.margin>
+                        <Button fx:id="searchButton" mnemonicParsing="false" onAction="#handleSearchBooks"
+                                text="Search">
+                            <font>
+                                <Font name="Symbol" size="21.0"/>
+                            </font>
+                        </Button>
                     </HBox>
                     <HBox alignment="CENTER">
                         <HBox.margin>
@@ -184,6 +182,85 @@
     </Tab>
     <Tab text="Loans">
         <BorderPane prefHeight="200.0" prefWidth="200.0">
+            <top>
+                <HBox alignment="CENTER" spacing="19.0" BorderPane.alignment="CENTER">
+                    <BorderPane.margin>
+                        <Insets left="10.0" />
+                    </BorderPane.margin>
+                    <padding>
+                        <Insets bottom="20.0" top="-10.0" />
+                    </padding>
+                    <VBox alignment="CENTER" prefHeight="100.0" prefWidth="250.0" spacing="10.0">
+                        <HBox.margin>
+                            <Insets right="5.0" />
+                        </HBox.margin>
+                        <TextField fx:id="searchLoanTitle" onAction="#handleSearchLoans" promptText="Enter book title..." VBox.vgrow="ALWAYS">
+                            <font>
+                                <Font size="13.0" />
+                            </font>
+                            <VBox.margin>
+                                <Insets />
+                            </VBox.margin>
+                        </TextField>
+                        <TextField fx:id="searchFieldBorrow" onAction="#handleSearchLoans" promptText="Enter borrower name..">
+                            <font>
+                                <Font size="13.0" />
+                            </font>
+                            <VBox.margin>
+                                <Insets />
+                            </VBox.margin>
+                        </TextField>
+                        <padding>
+                            <Insets right="-5.0" />
+                        </padding>
+                    </VBox>
+                    <VBox alignment="BOTTOM_CENTER" spacing="5.0">
+                        <HBox alignment="CENTER" spacing="20.0" />
+                        <HBox.margin>
+                            <Insets top="20.0" />
+                        </HBox.margin>
+                    </VBox>
+                    <VBox alignment="CENTER">
+                  <DatePicker fx:id="borrowDateSearch" promptText="Choose a borrow date..." />
+                        <HBox.margin>
+                            <Insets left="-5.0" />
+                        </HBox.margin>
+                    </VBox>
+                    <VBox alignment="CENTER">
+                        <DatePicker fx:id="returnDateSearch" promptText="Choose a return date..."/>
+                    </VBox>
+                    <VBox alignment="CENTER">
+                        <CheckBox fx:id="overdueCheck" alignment="CENTER" mnemonicParsing="false" text="Overdue"
+                                  textAlignment="CENTER">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                            <padding>
+                                <Insets right="10.0"/>
+                            </padding>
+                        </CheckBox>
+                    </VBox>
+                    <HBox alignment="CENTER" prefWidth="92.0">
+                        <HBox.margin>
+                            <Insets right="-15.0"/>
+                        </HBox.margin>
+                        <Button fx:id="searchLoanButton" mnemonicParsing="false" onAction="#handleSearchLoans"
+                                text="Search">
+                            <font>
+                                <Font name="Symbol" size="21.0"/>
+                            </font>
+                        </Button>
+                    </HBox>
+                    <HBox alignment="CENTER">
+                        <HBox.margin>
+                            <Insets />
+                        </HBox.margin>
+                        <padding>
+                            <Insets bottom="10.0" left="-5.0" right="10.0" top="10.0" />
+                        </padding>
+                    </HBox>
+                </HBox>
+            </top>
             <center>
                 <TableView fx:id="adminLoanTable" prefHeight="200.0" prefWidth="200.0" stylesheets="@styles.css" BorderPane.alignment="CENTER">
                     <columns>

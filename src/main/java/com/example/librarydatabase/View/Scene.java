@@ -1,6 +1,6 @@
 package com.example.librarydatabase.View;
 
-import com.example.librarydatabase.Controller.Controller;
+import com.example.librarydatabase.Controller.MasterController;
 import com.example.librarydatabase.Model.Book;
 import com.example.librarydatabase.Model.Loan;
 import javafx.collections.FXCollections;
@@ -25,7 +25,7 @@ public class Scene {
         return loader;
     }
 
-    protected void populateTableView(boolean bookOrLoan, TableView table, Controller controller, TableColumn category) {
+    protected void populateTableView(boolean bookOrLoan, TableView table, MasterController controller, TableColumn category) {
         if (bookOrLoan){
             ObservableList<Book> bookList = FXCollections.observableArrayList();
             bookList.addAll(controller.library.getBooks().values());

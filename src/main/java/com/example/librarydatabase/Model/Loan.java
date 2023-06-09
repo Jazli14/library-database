@@ -14,7 +14,8 @@ public class Loan {
     private Date returnDate;
     private boolean isOverdue;
 
-    public Loan(Library library, int bookID, String title, String username, Date borrowDate, Date returnDate, boolean overdueStatus) {
+    public Loan(Library library, int bookID, String title, String username, Date borrowDate, Date returnDate,
+                boolean overdueStatus) {
         this.loanID = generateLoanID(library);
         this.bookID = bookID;
         this.title = title;
@@ -24,7 +25,8 @@ public class Loan {
         this.isOverdue = overdueStatus;
     }
 
-    public Loan(int loanID, int bookID, String title, String username, Date borrowDate, Date returnDate, boolean overdueStatus) {
+    public Loan(int loanID, int bookID, String title, String username, Date borrowDate, Date returnDate,
+                boolean overdueStatus) {
         this.loanID = loanID;
         this.bookID = bookID;
         this.title = title;
