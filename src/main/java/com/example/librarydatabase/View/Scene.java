@@ -3,6 +3,7 @@ package com.example.librarydatabase.View;
 import com.example.librarydatabase.Controller.MasterController;
 import com.example.librarydatabase.Model.Book;
 import com.example.librarydatabase.Model.Loan;
+import com.example.librarydatabase.Model.Account;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -25,16 +26,24 @@ public class Scene {
         return loader;
     }
 
-    protected void populateTableView(boolean bookOrLoan, TableView table, MasterController controller, TableColumn category) {
-        if (bookOrLoan){
-            ObservableList<Book> bookList = FXCollections.observableArrayList();
-            bookList.addAll(controller.library.getBooks().values());
-            table.setItems(bookList);
-        }
-        else {
-            ObservableList<Loan> loanList = FXCollections.observableArrayList();
-            loanList.addAll(controller.library.getLoans().values());
-            table.setItems(loanList);
+    protected void populateTableView(int typeOfClass, TableView table, MasterController controller, TableColumn category) {
+
+        switch (typeOfClass) {
+            case 0:
+                ObservableList<Book> bookList = FXCollections.observableArrayList();
+                bookList.addAll(controller.library.getBooks().values());
+                table.setItems(bookList);
+                break;
+            case 1:
+                ObservableList<Loan> loanList = FXCollections.observableArrayList();
+                loanList.addAll(controller.library.getLoans().values());
+                table.setItems(loanList);
+                break;
+            case 2:
+                ObservableList<Account> accountList = FXCollections.observableArrayList();
+                accountList.addAll(controller.library.getAccounts().values());
+                table.setItems(accountList);
+                break;
         }
         table.getSortOrder().add(category);
         table.refresh();

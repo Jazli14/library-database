@@ -4,7 +4,7 @@ import com.example.librarydatabase.Controller.UserScenario;
 
 import java.sql.Date;
 
-public class User extends Member {
+public class User extends Account {
     public User(String username, String password){
         super(username, password);
         setAdmin(false);
@@ -48,8 +48,7 @@ public class User extends Member {
 
     private boolean isValidDate(Date borrowDate, Date returnDate){
         int comparisonResult = borrowDate.compareTo(returnDate);
-        boolean validDate = (comparisonResult < 0);
-        return validDate;
+        return (comparisonResult < 0);
     }
 
 

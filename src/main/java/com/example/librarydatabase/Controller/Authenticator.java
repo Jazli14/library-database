@@ -15,7 +15,7 @@ public class Authenticator extends MasterController implements Login {
     }
     @Override
     public LoginScenario processLogin(String username, String password, boolean admin){
-        Member returningMember = accList.getMember(username);
+        Account returningAccount = accList.getAccount(username);
         boolean usernameEmpty = username.isEmpty();
         boolean passwordEmpty = password.isEmpty();
         // the user exists
@@ -29,10 +29,10 @@ public class Authenticator extends MasterController implements Login {
             return LoginScenario.PASSWORD_EMPTY;
         }
 
-        if (returningMember != null){
-            if ((admin == returningMember.getRole())){
-                if (returningMember.validPassword(password)){
-                    System.out.println("Welcome back " + returningMember.getUsername());
+        if (returningAccount != null){
+            if ((admin == returningAccount.getIsAdminRole())){
+                if (returningAccount.validPassword(password)){
+                    System.out.println("Welcome back " + returningAccount.getUsername());
                     return null;
                 }
                 else {
@@ -47,7 +47,7 @@ public class Authenticator extends MasterController implements Login {
         return accList;
     }
     public LoginScenario processRegistration(String username, String password, boolean isAdmin){
-        boolean usernameTaken = accList.memberExists(username);
+        boolean usernameTaken = accList.accountExists(username);
         boolean usernameEmpty = username.isEmpty();
         boolean passwordEmpty = password.isEmpty();
 
@@ -93,12 +93,12 @@ public class Authenticator extends MasterController implements Login {
                         String newPassword = resultSet.getString("password");
                         boolean isAdmin = resultSet.getBoolean("admin");
                         if (isAdmin){
-                            Admin member = new Admin(newUsername, newPassword);
-                            accList.add(member);
+                            Admin account = new Admin(newUsername, newPassword);
+                            accList.add(account);
                         }
                         else {
-                            User member = new User(newUsername, newPassword);
-                            accList.add(member);
+                            User account = new User(newUsername, newPassword);
+                            accList.add(account);
                         }
                     }
                 }
@@ -107,7 +107,7 @@ public class Authenticator extends MasterController implements Login {
             e.printStackTrace();
         }
     }
-    private void updateDatabase(Member member, String password){
+    private void updateDatabase(Account account, String password){
         try {
             Class.forName("org.postgresql.Driver");
         }
@@ -119,9 +119,9 @@ public class Authenticator extends MasterController implements Login {
 
             String insertSQL = "INSERT INTO accounts (username, password, admin) VALUES (?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(insertSQL)) {
-                statement.setString(1, member.getUsername());
+                statement.setString(1, account.getUsername());
                 statement.setString(2, password);
-                statement.setBoolean(3, member.getRole());
+                statement.setBoolean(3, account.getIsAdminRole());
                 statement.executeUpdate();
 
             }
@@ -129,20 +129,5 @@ public class Authenticator extends MasterController implements Login {
                 e.printStackTrace();
         }
     }
-
-//    private static Connection establishConnection() throws IOException, SQLException {
-//        Properties props = new Properties();
-//        try (FileInputStream fis = new FileInputStream(
-//                "src/main/java/com/example/librarydatabase/Controller/config.properties")) {
-//            props.load(fis);
-//        }
-//
-//        String url = props.getProperty("dbUrl");
-//        String username = props.getProperty("dbUsername");
-//        String password = props.getProperty("dbPassword");
-//
-//        return DriverManager.getConnection(url, username, password);
-//    }
-
 
 }

@@ -108,8 +108,8 @@ public class UserScene extends Scene implements Initializable {
                         selectedBook.getAuthor() + " for " + startDateString + " to " + endDateString + ".";
                 showAlert(UserScenario.LOAN_SUCCESS, successMessage);
 
-                populateTableView(true, searchTable, userController, searchTitle);
-                populateTableView(false, loanTable, userController, loanTitle);
+                populateTableView(0, searchTable, userController, searchTitle);
+                populateTableView(1, loanTable, userController, loanTitle);
             }
         }
         else {
@@ -127,8 +127,8 @@ public class UserScene extends Scene implements Initializable {
 
 
         if (returnSuccess) {
-            populateTableView(true, searchTable, userController, searchTitle);
-            populateTableView(false, loanTable, userController, loanTitle);
+            populateTableView(0, searchTable, userController, searchTitle);
+            populateTableView(1, loanTable, userController, loanTitle);
             showAlert(UserScenario.RETURN_SUCCESS, "You have successfully loaned out " +
                     selectedLoan.getTitle() + ".");
         }
@@ -239,7 +239,7 @@ public class UserScene extends Scene implements Initializable {
             showAlert(UserScenario.SEARCH_FAILURE, "Something went wrong and your " +
                     "search couldn't be completed");
         }
-        populateTableView(true, searchTable, userController, searchTitle);
+        populateTableView(0, searchTable, userController, searchTitle);
     }
 
     public void setStage(Stage stage) {
@@ -256,9 +256,9 @@ public class UserScene extends Scene implements Initializable {
 
 
     public void initializeController(AccountList accList, String username){
-        userController.setUserAndPopulate(accList.getMember(username));
-        populateTableView(true, searchTable, userController, searchTitle);
-        populateTableView(false, loanTable, userController, loanTitle);
+        userController.setUserAndPopulate(accList.getAccount(username));
+        populateTableView(0, searchTable, userController, searchTitle);
+        populateTableView(1, loanTable, userController, loanTitle);
     }
 
 

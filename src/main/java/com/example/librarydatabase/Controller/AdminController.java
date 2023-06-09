@@ -45,15 +45,28 @@ public class AdminController extends MasterController {
 
     public int processCreateLoan(int bookID, String title, String username, Date borrowDate,
                                  Date returnDate, boolean overdueStatus) {
-        Loan newLoan = client.createLoan(library, bookID, title, username, borrowDate, returnDate, overdueStatus);
-
-        if (newLoan != null) {
-            updateSQLDatabase(newLoan, true);
-
-            return newLoan.getLoanID();
-        } else {
-            return 0;
+        if (!library.containsAccount(username)){
+            return 1;
         }
+        else if (library.retrieveAccount(username).getIsAdminRole()){
+            return 2;
+        }
+        else if (library.containsBook(bookID)) {
+            if (!(library.getBook(bookID).getTitle().equals(title))){
+                return 3;
+            }
+        }
+        else {
+            Loan newLoan = client.createLoan(library, bookID, title, username, borrowDate, returnDate, overdueStatus);
+
+            if (newLoan != null) {
+                updateSQLDatabase(newLoan, true);
+
+                return newLoan.getLoanID();
+            }
+
+        }
+        return 0;
 
     }
 
@@ -65,32 +78,56 @@ public class AdminController extends MasterController {
 
             return true;
         } else {
-            System.out.println("Loan failed");
             return false;
         }
 
     }
 
-    private void updateSQLDatabase(Book newBook, boolean createOrDelete) {
+    public String processCreateAccount(String username, String password, boolean admin) {
+        Account newAccount = client.createAccount(library, username, password, admin);
+
+        if (newAccount != null) {
+            updateSQLDatabase(newAccount, true);
+
+            return newAccount.getUsername();
+        } else {
+            return null;
+        }
+    }
+
+    public boolean processRemoveAccount(String username) {
+        Account removedAccount = client.removeAccount(library, username);
+
+        if (removedAccount != null) {
+            updateSQLDatabase(removedAccount, false);
+
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    private void updateSQLDatabase(Book book, boolean createOrDelete) {
         try (Connection connection = establishConnection()) {
             if (createOrDelete) {
                 String insertBookQuery = "INSERT INTO available2 (book_id, title, authors, rating, num_pages, year, " +
                         "ready) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement statement = connection.prepareStatement(insertBookQuery)) {
-                    statement.setInt(1, newBook.getBookID());
-                    statement.setString(2, newBook.getTitle());
-                    statement.setString(3, newBook.getAuthor());
-                    statement.setDouble(4, newBook.getRating());
-                    statement.setInt(5, newBook.getNum_pages());
-                    statement.setInt(6, newBook.getYear());
-                    statement.setBoolean(7, newBook.getAvailability());
+                    statement.setInt(1, book.getBookID());
+                    statement.setString(2, book.getTitle());
+                    statement.setString(3, book.getAuthor());
+                    statement.setDouble(4, book.getRating());
+                    statement.setInt(5, book.getNum_pages());
+                    statement.setInt(6, book.getYear());
+                    statement.setBoolean(7, book.getAvailability());
                     statement.executeUpdate();
 
                 }
             } else {
                 String deleteBookQuery = "DELETE FROM available2 WHERE book_id = ?";
                 try (PreparedStatement statement = connection.prepareStatement(deleteBookQuery)) {
-                    statement.setInt(1, newBook.getBookID()); // Set the loan_id value
+                    statement.setInt(1, book.getBookID()); // Set the loan_id value
                     statement.executeUpdate();
 
                 }
@@ -101,26 +138,26 @@ public class AdminController extends MasterController {
 
     }
 
-    private void updateSQLDatabase(Loan newLoan, boolean createOrDelete) {
+    private void updateSQLDatabase(Loan loan, boolean createOrDelete) {
         try (Connection connection = establishConnection()) {
             if (createOrDelete) {
                 String insertLoanQuery = "INSERT INTO loans2 (loan_id, book_id, title, borrower, borrow_date," +
                         " return_date, overdue) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement statement = connection.prepareStatement(insertLoanQuery)) {
-                    statement.setInt(2, newLoan.getBookID());
-                    statement.setString(3, newLoan.getTitle());
-                    statement.setInt(1, newLoan.getLoanID());
-                    statement.setString(4, newLoan.getUsername());
-                    statement.setDate(5, newLoan.getBorrowDate());
-                    statement.setDate(6, newLoan.getReturnDate());
-                    statement.setBoolean(7, newLoan.getIsOverdue());
+                    statement.setInt(2, loan.getBookID());
+                    statement.setString(3, loan.getTitle());
+                    statement.setInt(1, loan.getLoanID());
+                    statement.setString(4, loan.getUsername());
+                    statement.setDate(5, loan.getBorrowDate());
+                    statement.setDate(6, loan.getReturnDate());
+                    statement.setBoolean(7, loan.getIsOverdue());
                     statement.executeUpdate();
 
                 }
             } else {
                 String deleteLoanQuery = "DELETE FROM loans2 WHERE loan_id = ?";
                 try (PreparedStatement statement = connection.prepareStatement(deleteLoanQuery)) {
-                    statement.setInt(1, newLoan.getLoanID()); // Set the loan_id value
+                    statement.setInt(1, loan.getLoanID()); // Set the loan_id value
                     statement.executeUpdate();
                 }
             }
@@ -129,6 +166,36 @@ public class AdminController extends MasterController {
         }
 
     }
+
+    private void updateSQLDatabase(Account account, boolean createOrDelete) {
+        try (Connection connection = establishConnection()) {
+            if (createOrDelete) {
+                String insertAccountQuery = "INSERT INTO accounts (username, password, admin) VALUES (?, ?, ?)";
+                try (PreparedStatement statement = connection.prepareStatement(insertAccountQuery)) {
+                    statement.setString(1, account.getUsername());
+                    statement.setString(2, account.getPassword());
+                    statement.setBoolean(3, account.getIsAdminRole());
+                    statement.executeUpdate();
+
+                }
+            } else {
+                String deleteAccountQuery = "DELETE FROM accounts WHERE username = ?";
+                try (PreparedStatement statement = connection.prepareStatement(deleteAccountQuery)) {
+                    statement.setString(1, account.getUsername()); // Set the loan_id value
+                    statement.executeUpdate();
+                }
+                String deleteAccountLoansQuery = "DELETE FROM loans2 WHERE borrower = ?";
+                try (PreparedStatement statement = connection.prepareStatement(deleteAccountLoansQuery)) {
+                    statement.setString(1, account.getUsername());
+                    statement.executeUpdate();
+                }
+            }
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     private boolean editSQLDatabase(int bookID, String title, String author, double rating, int num_pages,
                                     int year, boolean available) {
@@ -278,8 +345,9 @@ public class AdminController extends MasterController {
         return editSQLDatabase(loanID, borrower, borrowDate, returnDate, overdue);
     }
 
-    public void setAdminAndPopulate(Member client) {
+    public void setAdminAndPopulate(Account client, AccountList accList) {
         this.client = (Admin) client;
+        this.library.setAccounts(accList);
         populateLibrary(client);
 
     }
@@ -399,4 +467,61 @@ public class AdminController extends MasterController {
         }
         return false;
     }
+
+
+    public boolean processSearchAccounts(String username, boolean admin, boolean reset) throws SQLException, IOException {
+        library.clearAccountsList();
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (java.lang.ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+
+        StringBuilder selectAccounts = new StringBuilder("SELECT * FROM accounts WHERE 1=1");
+
+        if (!username.isEmpty() && !reset) {
+            selectAccounts.append(" AND LOWER(username) LIKE LOWER(?)");
+        }
+        if (!reset){
+            selectAccounts.append(" AND admin = ?");
+        }
+
+        String query = selectAccounts.toString();
+
+        try (Connection connection = establishConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+
+                int parameterIndex = 1;
+
+                if (!username.isEmpty() && !reset) {
+                    statement.setString(parameterIndex++, "%" + username.toLowerCase() + "%");
+                }
+
+                if (!reset) {
+                    statement.setBoolean(parameterIndex, admin);
+                }
+
+                ResultSet resultSet = statement.executeQuery();
+
+                // Process the search results
+                while (resultSet.next()) {
+                    // Retrieve data from the result set
+                    String newAccountUsername = resultSet.getString("username");
+                    String newAccountPassword = resultSet.getString("password");
+                    boolean newAccountAdmin = resultSet.getBoolean("admin");
+
+                    library.addAccount(newAccountUsername, newAccountPassword, newAccountAdmin);
+
+                }
+                return true;
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+
+
 }
