@@ -37,8 +37,8 @@ public abstract class MasterController {
         }
 
         try (Connection connection = establishConnection()) {
-            String selectBooks = "SELECT available2.book_id, available2.title, available2.authors, available2.rating, " +
-                    "available2.num_pages, available2.year, available2.ready FROM available2";
+            String selectBooks = "SELECT book_id, title, authors, rating, " +
+                    "num_pages, year, ready FROM books";
 
 
             try (PreparedStatement statement = connection.prepareStatement(selectBooks)) {
@@ -61,7 +61,7 @@ public abstract class MasterController {
 
             if (!client.getIsAdminRole()) {
                 String selectLoans = "SELECT loan_id, book_id, title, borrower, borrow_date, return_date, overdue " +
-                        "FROM loans2 WHERE borrower = ?";
+                        "FROM loans WHERE borrower = ?";
                 try (PreparedStatement statement = connection.prepareStatement(selectLoans)) {
                     statement.setString(1, client.getUsername());
                     executeLoanQuery(statement);
@@ -69,7 +69,7 @@ public abstract class MasterController {
             }
             else {
                 String selectLoans = "SELECT loan_id, book_id, title, borrower, borrow_date, return_date, overdue " +
-                        "FROM loans2";
+                        "FROM loans";
                 try (PreparedStatement statement = connection.prepareStatement(selectLoans)) {
                     executeLoanQuery(statement);
                 }
@@ -104,7 +104,7 @@ public abstract class MasterController {
 
 
     public boolean searchBooks(String title, String author, boolean minOrMax, double rating,
-                               int minLength, int maxLength, int year, boolean ready) throws SQLException, IOException {
+                               int minLength, int maxLength, int year, boolean isUnavailable) throws SQLException, IOException {
         library.clearBooks();
         try {
             Class.forName("org.postgresql.Driver");
@@ -112,7 +112,7 @@ public abstract class MasterController {
             System.out.println(e.getMessage());
         }
 
-        StringBuilder selectBooks = new StringBuilder("SELECT * FROM available2 WHERE 1=1");
+        StringBuilder selectBooks = new StringBuilder("SELECT * FROM books WHERE 1=1");
 
 
         if (!title.isEmpty()) {
@@ -137,9 +137,10 @@ public abstract class MasterController {
             selectBooks.append(" AND year = ?");
         }
 
-        boolean searchCriteriaExists = !title.isEmpty() || !author.isEmpty() || (minLength != -1 && maxLength != -1) || year != -1
-                || minOrMax || rating != 0.0 || ready;
-        if (searchCriteriaExists){
+//        boolean searchCriteriaExists = !title.isEmpty() || !author.isEmpty() || (minLength != -1 && maxLength != -1) || year != -1
+//                || minOrMax || rating != 0.0 || !isUnavailable;
+
+        if (!isUnavailable){
             selectBooks.append(" AND ready = ?");
         }
         if (!minOrMax) {
@@ -177,8 +178,8 @@ public abstract class MasterController {
                     statement.setInt(parameterIndex++, year);
                 }
 
-                if (searchCriteriaExists){
-                    statement.setBoolean(parameterIndex++, ready);
+                if (!isUnavailable){
+                    statement.setBoolean(parameterIndex++, true);
                 }
 
                 statement.setDouble(parameterIndex, rating);
