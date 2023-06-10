@@ -279,7 +279,7 @@ public class AdminScene extends Scene implements Initializable {
         boolean availability = availableCheck.isSelected();
 
         RadioButton selectedButton = (RadioButton) MinMax.getSelectedToggle();
-        boolean minOrMax = (selectedButton == minRadio);
+        boolean minOrMax = (selectedButton != minRadio);
         double rating = ratingSlider.getValue();
 
         boolean successfulSearch = adminController.processSearchBooks(title, author, minOrMax, rating,
