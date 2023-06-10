@@ -39,7 +39,7 @@ public class UserController extends MasterController {
     }
 
     public boolean processSearch(String title, String author, boolean minOrMax, double rating, String lengthRange,
-                              Integer year, boolean ready) throws SQLException, IOException {
+                              Integer year, boolean isUnavailable) throws SQLException, IOException {
         int minRange;
         int maxRange;
         if (lengthRange != null) {
@@ -65,13 +65,13 @@ public class UserController extends MasterController {
 
         int intYear;
         intYear = Objects.requireNonNullElse(year, -1);
-        return searchBooks(title, author, minOrMax, rating, minRange, maxRange, intYear, ready);
+        return searchBooks(title, author, minOrMax, rating, minRange, maxRange, intYear, isUnavailable);
     }
 
     public void updateBookStatus(int bookID, boolean status) {
 
         try (Connection connection = establishConnection()) {
-            String updateQuery = "UPDATE available2 SET ready = ? WHERE book_id = ?";
+            String updateQuery = "UPDATE books SET ready = ? WHERE book_id = ?";
 
             try (PreparedStatement statement = connection.prepareStatement(updateQuery)) {
                 statement.setBoolean(1, status);
@@ -86,7 +86,7 @@ public class UserController extends MasterController {
     public void updateLoans(Loan loan, boolean status) {
         try (Connection connection = establishConnection()) {
             if (status) {
-                String insertLoanQuery = "INSERT INTO loans2 (loan_id, book_id, title, borrower, borrow_date, return_date, " +
+                String insertLoanQuery = "INSERT INTO loans (loan_id, book_id, title, borrower, borrow_date, return_date, " +
                         "overdue) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement statement = connection.prepareStatement(insertLoanQuery)) {
                     statement.setInt(1, loan.getLoanID());
@@ -100,7 +100,7 @@ public class UserController extends MasterController {
 
                 }
             } else {
-                String deleteLoanQuery = "DELETE FROM loans2 WHERE loan_id = ?";
+                String deleteLoanQuery = "DELETE FROM loans WHERE loan_id = ?";
                 try (PreparedStatement statement = connection.prepareStatement(deleteLoanQuery)) {
                     statement.setInt(1, loan.getLoanID()); // Set the loan_id value
 

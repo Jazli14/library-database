@@ -111,7 +111,7 @@ public class AdminController extends MasterController {
     private void updateSQLDatabase(Book book, boolean createOrDelete) {
         try (Connection connection = establishConnection()) {
             if (createOrDelete) {
-                String insertBookQuery = "INSERT INTO available2 (book_id, title, authors, rating, num_pages, year, " +
+                String insertBookQuery = "INSERT INTO books (book_id, title, authors, rating, num_pages, year, " +
                         "ready) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement statement = connection.prepareStatement(insertBookQuery)) {
                     statement.setInt(1, book.getBookID());
@@ -125,7 +125,7 @@ public class AdminController extends MasterController {
 
                 }
             } else {
-                String deleteBookQuery = "DELETE FROM available2 WHERE book_id = ?";
+                String deleteBookQuery = "DELETE FROM books WHERE book_id = ?";
                 try (PreparedStatement statement = connection.prepareStatement(deleteBookQuery)) {
                     statement.setInt(1, book.getBookID()); // Set the loan_id value
                     statement.executeUpdate();
@@ -141,7 +141,7 @@ public class AdminController extends MasterController {
     private void updateSQLDatabase(Loan loan, boolean createOrDelete) {
         try (Connection connection = establishConnection()) {
             if (createOrDelete) {
-                String insertLoanQuery = "INSERT INTO loans2 (loan_id, book_id, title, borrower, borrow_date," +
+                String insertLoanQuery = "INSERT INTO loans (loan_id, book_id, title, borrower, borrow_date," +
                         " return_date, overdue) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement statement = connection.prepareStatement(insertLoanQuery)) {
                     statement.setInt(2, loan.getBookID());
@@ -155,7 +155,7 @@ public class AdminController extends MasterController {
 
                 }
             } else {
-                String deleteLoanQuery = "DELETE FROM loans2 WHERE loan_id = ?";
+                String deleteLoanQuery = "DELETE FROM loans WHERE loan_id = ?";
                 try (PreparedStatement statement = connection.prepareStatement(deleteLoanQuery)) {
                     statement.setInt(1, loan.getLoanID()); // Set the loan_id value
                     statement.executeUpdate();
@@ -184,7 +184,7 @@ public class AdminController extends MasterController {
                     statement.setString(1, account.getUsername()); // Set the loan_id value
                     statement.executeUpdate();
                 }
-                String deleteAccountLoansQuery = "DELETE FROM loans2 WHERE borrower = ?";
+                String deleteAccountLoansQuery = "DELETE FROM loans WHERE borrower = ?";
                 try (PreparedStatement statement = connection.prepareStatement(deleteAccountLoansQuery)) {
                     statement.setString(1, account.getUsername());
                     statement.executeUpdate();
@@ -201,7 +201,7 @@ public class AdminController extends MasterController {
                                     int year, boolean available) {
         try (Connection connection = establishConnection()) {
             StringBuilder sqlBuilder = new StringBuilder();
-            sqlBuilder.append("UPDATE available2 SET");
+            sqlBuilder.append("UPDATE books SET");
             if (!title.isEmpty()) {
                 sqlBuilder.append(" title = ?,");
             }
@@ -261,7 +261,7 @@ public class AdminController extends MasterController {
     private boolean editSQLDatabase(int loanID, String borrower, Date borrowDate, Date returnDate, boolean overdue) {
         try (Connection connection = establishConnection()) {
             StringBuilder sqlBuilder = new StringBuilder();
-            sqlBuilder.append("UPDATE loans2 SET");
+            sqlBuilder.append("UPDATE loans SET");
             if (!borrower.isEmpty()) {
                 sqlBuilder.append(" borrower = ?,");
             }
@@ -391,7 +391,7 @@ public class AdminController extends MasterController {
             System.out.println(e.getMessage());
         }
 
-        StringBuilder selectLoans = new StringBuilder("SELECT * FROM loans2 WHERE 1=1");
+        StringBuilder selectLoans = new StringBuilder("SELECT * FROM loans WHERE 1=1");
 
         if (!borrower.isEmpty()) {
             selectLoans.append(" AND LOWER(borrower) LIKE LOWER(?)");
