@@ -24,7 +24,7 @@
     <Tab text="Search">
         <BorderPane>
             <top>
-                <HBox alignment="CENTER" spacing="19.0" BorderPane.alignment="CENTER">
+                <HBox alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
                     <BorderPane.margin>
                         <Insets left="10.0" />
                     </BorderPane.margin>
@@ -94,24 +94,23 @@
                      <Insets left="-12.0" />
                   </HBox.margin>
                     </VBox>
-                    <VBox alignment="CENTER">
-                        <CheckBox fx:id="availableCheck" alignment="CENTER" mnemonicParsing="false" text="Loanable"
-                                  textAlignment="CENTER">
+                    <VBox alignment="CENTER" prefHeight="40.0" prefWidth="123.0">
+                        <CheckBox fx:id="availableCheck" alignment="CENTER" mnemonicParsing="false" text="Show Unavailable?" textAlignment="CENTER" wrapText="true">
                             <font>
-                                <Font size="14.0"/>
+                                <Font size="14.0" />
                             </font>
                             <padding>
-                                <Insets right="10.0"/>
+                                <Insets right="10.0" />
                             </padding>
                         </CheckBox>
                     </VBox>
                     <HBox alignment="CENTER" prefWidth="92.0">
                         <HBox.margin>
-                            <Insets right="-15.0"/>
+                            <Insets right="-15.0" />
                         </HBox.margin>
                         <Button fx:id="searchButton" mnemonicParsing="false" onAction="#handleSearch" text="Search">
                             <font>
-                                <Font name="Symbol" size="21.0"/>
+                                <Font name="Symbol" size="21.0" />
                             </font>
                         </Button>
                     </HBox>
@@ -131,25 +130,24 @@
          <bottom>
              <HBox alignment="CENTER" spacing="468.0" BorderPane.alignment="CENTER">
                  <BorderPane.margin>
-                     <Insets/>
+                     <Insets />
                  </BorderPane.margin>
                  <padding>
-                     <Insets top="6.0"/>
+                     <Insets top="6.0" />
                  </padding>
                  <HBox alignment="CENTER_LEFT">
                      <Button fx:id="userLogoutButton" mnemonicParsing="false" onAction="#handleLogout" text="Logout">
                          <font>
-                             <Font name="Symbol" size="18.0"/>
+                             <Font name="Symbol" size="18.0" />
                          </font>
                      </Button>
                  </HBox>
                  <HBox alignment="CENTER_RIGHT" spacing="10.0">
-                     <DatePicker fx:id="borrowDatePicker" promptText="Choose a borrow date..."/>
-                     <DatePicker fx:id="returnDatePicker" promptText="Choose a return date..."/>
-                     <Button fx:id="loanButton" alignment="CENTER_RIGHT" mnemonicParsing="false"
-                             onAction="#handleBorrow" text="Loan">
+                     <DatePicker fx:id="borrowDatePicker" promptText="Choose a borrow date..." />
+                     <DatePicker fx:id="returnDatePicker" promptText="Choose a return date..." />
+                     <Button fx:id="loanButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#handleBorrow" text="Loan">
                          <font>
-                             <Font name="Symbol" size="18.0"/>
+                             <Font name="Symbol" size="18.0" />
                          </font>
                      </Button>
                  </HBox>
@@ -193,19 +191,19 @@
          <bottom>
              <HBox alignment="CENTER" spacing="823.0" BorderPane.alignment="CENTER">
                  <padding>
-                     <Insets top="6.0"/>
+                     <Insets top="6.0" />
                  </padding>
                  <HBox>
                      <Button fx:id="loansLogoutButton" mnemonicParsing="false" onAction="#handleLogout" text="Logout">
                          <font>
-                             <Font name="Symbol" size="18.0"/>
+                             <Font name="Symbol" size="18.0" />
                          </font>
                      </Button>
                  </HBox>
                  <HBox>
                      <Button fx:id="returnButton" mnemonicParsing="false" onAction="#handleReturn" text="Return">
                          <font>
-                             <Font name="Symbol" size="18.0"/>
+                             <Font name="Symbol" size="18.0" />
                          </font>
                      </Button>
                  </HBox>
