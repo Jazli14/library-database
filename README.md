@@ -23,6 +23,8 @@ Once the user logs in, they are greeted with an interface that shows books the u
 ## Admin Account Interface
 The admin will login to be greeted to the same interface but with extra options. It is allowed three different tabs instead, the book table, loans table but as well as access to an accounts table. They will also have access to hidden fields in an entry such as the “book ID” or the “loan ID”.
 
+## Tables and Search
+
 ### Books Tab
 Both a user and admin will have a table of books that will be displayed directly under the search bar which displays the books title, author, a rating out of 5, number of pages, the year it was published and also if the book was available to loan to the user. If a user account is using the system they are allowed to loan books that are available to them, using the date pickers at the bottom. This will update the book’s availability and create a loan in the database for that book. An admin will be allowed to delete, create and edit books. The latter two functions will prompt a window to open up to add or change a title, author, rating, number of pages, year and if it's available. 
 
