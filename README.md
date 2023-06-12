@@ -25,13 +25,13 @@ The admin will login to be greeted to the same interface but with extra options.
 
 ## Tables and Search
 
-### Books Tab
+### Books Table
 Both a user and admin will have a table of books that will be displayed directly under the search bar which displays the books title, author, a rating out of 5, number of pages, the year it was published and also if the book was available to loan to the user. If a user account is using the system they are allowed to loan books that are available to them, using the date pickers at the bottom. This will update the book’s availability and create a loan in the database for that book. An admin will be allowed to delete, create and edit books. The latter two functions will prompt a window to open up to add or change a title, author, rating, number of pages, year and if it's available. 
 
-### Loans Tab
+### Loans Table
 On the left there is an option to switch the tab to find loans for the user. It will display the book title, borrower which should be the user and also a borrow and return date. It will also display if that loan is overdue, that is if the current date when the user logs in is past the return date. Similar to the books tab, If an admin account uses the system they will instead have access to removing a loan, editing a loan and creating a loan. The admin will be prompted again with a window to input a book ID, title, borrower, loan period and also if it is overdue. 
 
-### Accounts Tab
+### Accounts Table
 A table of accounts will be displayed with fields such as username, password and if they have admin privileges. Although within the password column the admin cannot see the passwords of any of the accounts as they will be masked off with “••••••••••” for enhanced security as a good practice. The admin that views this table will also have access to a button to remove an account or create an account. If they press the latter they will be prompted with a window to input a username, password if the account will be an admin. Both these features will update to the SQL database in real time. 
 
 ### Search Feature
