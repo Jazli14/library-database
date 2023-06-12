@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.example</groupId>
-  <artifactId>library-database</artifactId>
+  <groupId>com.library_database</groupId>
+  <artifactId>library_app</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>library-database</name>
 
@@ -64,7 +64,7 @@
             <!-- Default configuration for running with: mvn clean javafx:run -->
             <id>default-cli</id>
             <configuration>
-              <mainClass>com.example.librarydatabase/com.example.librarydatabase.HelloApplication</mainClass>
+              <mainClass>com.library_database.library_app/com.library_database.library_app.LibraryApp</mainClass>
               <launcher>app</launcher>
               <jlinkZipName>app</jlinkZipName>
               <jlinkImageName>app</jlinkImageName>
