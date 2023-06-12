@@ -7,6 +7,7 @@ We used an online server that hosted a PostgreSQL database called ElephantSQL wh
 ##  Cleaning and uploading a dataset of books
 Once the data is gathered, it needs to be put through preprocessing before the model is trained.
 A dataset was found on Kaggle from this link: [Kaggle Books Dataset](https://www.kaggle.com/datasets/jealousleopard/goodreadsbooks "Go to books dataset"). 
+
 After downloading the dataset, we cleaned it by extracting certain attributes/fields such as the book ID, title, author, rating, number of pages, and publishing date and removed entries that had missing data. We changed the publishing date to year to simplify the attribute and did all of this through a simple python script. To upload the dataset, we used another python script called “csv_to_db.py” to read the csv and to the dataset to the database through the psycopg2 database adapter to connect to our online database and import it using an SQL insert query.
 
 ## Code Structure
