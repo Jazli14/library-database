@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<DialogPane expanded="true" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.library_database.library_app.View.EditBookDialog">
+<DialogPane expanded="true" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.library_database.library_app.view.EditBookDialog">
     <content>
         <GridPane alignment="CENTER">
             <columnConstraints>

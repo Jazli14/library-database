@@ -1,6 +1,6 @@
-package com.library_database.library_app.View;
-import com.library_database.library_app.Controller.*;
-import com.library_database.library_app.Model.*;
+package com.library_database.library_app.view;
+import com.library_database.library_app.controller.*;
+import com.library_database.library_app.model.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,7 +40,6 @@ public class UserScene extends Scene implements Initializable {
     private DatePicker returnDatePicker;
     @FXML
     private DatePicker borrowDatePicker;
-
     @FXML
     private TableView<Loan> loanTable;
     @FXML
@@ -82,10 +81,12 @@ public class UserScene extends Scene implements Initializable {
     public UserScene(){
         userController = new UserController();
     }
+
+    // Event handler for the borrow button
     @FXML
     public void handleBorrow() {
         // get selected book, get selected dates
-        // GUI happens
+        // GUI retrieves all these values
         Book selectedBook = searchTable.getSelectionModel().getSelectedItem();
         LocalDate startDate = borrowDatePicker.getValue();
         LocalDate endDate = returnDatePicker.getValue();
@@ -94,6 +95,8 @@ public class UserScene extends Scene implements Initializable {
             // Convert LocalDate to java.sql.Date
             Date sqlStartDate = java.sql.Date.valueOf(startDate);
             Date sqlEndDate = java.sql.Date.valueOf(endDate);
+
+            // Process the attempted loan using the user controller
             UserScenario borrowSuccess = userController.processBorrow(selectedBook.getBookID(), sqlStartDate, sqlEndDate);
             if (borrowSuccess == UserScenario.LOAN_FAILURE_DATE){
                 showAlert(borrowSuccess, "You need to select a valid return period.");
@@ -108,6 +111,7 @@ public class UserScene extends Scene implements Initializable {
                         selectedBook.getAuthor() + " for " + startDateString + " to " + endDateString + ".";
                 showAlert(UserScenario.LOAN_SUCCESS, successMessage);
 
+                // Update the searchTable and loanTable after a successful loan
                 populateTableView(0, searchTable, userController, searchTitle);
                 populateTableView(1, loanTable, userController, loanTitle);
             }
@@ -119,6 +123,7 @@ public class UserScene extends Scene implements Initializable {
 
     }
 
+    // Event handler for the Return button
     @FXML
     public void handleReturn() {
         Loan selectedLoan = loanTable.getSelectionModel().getSelectedItem();
@@ -139,6 +144,7 @@ public class UserScene extends Scene implements Initializable {
         }
     }
 
+    // Show an alert dialog based on the user scenario and message
     public void showAlert(UserScenario scenario, String userMessage) {
         Alert alert;
         if (scenario == UserScenario.SEARCH_FAILURE){
@@ -174,6 +180,7 @@ public class UserScene extends Scene implements Initializable {
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Initialize the table columns
         searchTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         searchAuthor.setCellValueFactory(new PropertyValueFactory<>("author"));
         searchRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
@@ -189,6 +196,7 @@ public class UserScene extends Scene implements Initializable {
         int minValue = 1900;
         int maxValue = 2024;
 
+        // Initialize the yearSpinner with a custom value factory
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory
                 .IntegerSpinnerValueFactory(minValue, maxValue){
             @Override
@@ -215,12 +223,15 @@ public class UserScene extends Scene implements Initializable {
         yearSpinner.setValueFactory(valueFactory);
         yearSpinner.getValueFactory().setValue(null);
 
+        // Set drop down items
         pageCombo.setItems(FXCollections.observableArrayList(
                 "Any", "0-100", "101-200", "201-300", "301-400", "400-500", "More than 500"));
     }
 
+    // Event handler for the search button
     @FXML
     public void handleSearch() throws SQLException, IOException {
+        // Retrieves search criteria
         String title = searchField.getText();
         String author = searchFieldAuthor.getText();
         String pageLength = pageCombo.getValue();
@@ -232,6 +243,7 @@ public class UserScene extends Scene implements Initializable {
         boolean minOrMax = (selectedButton != minRadio);
         double rating = ratingSlider.getValue();
 
+        // Process the search using the user controller
         boolean successfulSearch = userController.processSearch(title, author, minOrMax, rating,
                 pageLength, year, availability);
 
@@ -242,10 +254,12 @@ public class UserScene extends Scene implements Initializable {
         populateTableView(0, searchTable, userController, searchTitle);
     }
 
+    // Set the stage for this scene
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    // Event handler for the logout button
     public void handleLogout() throws IOException {
         // Load Login Scene
         FXMLLoader newLoader = loadScene(stage, "/com/library_database/library_app/login_scene.fxml",
@@ -254,7 +268,7 @@ public class UserScene extends Scene implements Initializable {
         loginScene.setStage(stage);
     }
 
-
+    // Initialize the user controller with the account and populate the table views
     public void initializeController(AccountList accList, String username){
         userController.setUserAndPopulate(accList.getAccount(username));
         populateTableView(0, searchTable, userController, searchTitle);

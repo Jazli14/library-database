@@ -1,4 +1,4 @@
-package com.library_database.library_app.Controller;
+package com.library_database.library_app.controller;
 
 public enum LoginScenario {
     USERNAME_AND_PASSWORD_EMPTY,

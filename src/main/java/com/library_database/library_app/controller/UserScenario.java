@@ -1,4 +1,4 @@
-package com.library_database.library_app.Controller;
+package com.library_database.library_app.controller;
 
 public enum UserScenario {
     RETURN_SUCCESS,

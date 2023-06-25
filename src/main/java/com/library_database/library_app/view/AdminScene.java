@@ -1,7 +1,7 @@
-package com.library_database.library_app.View;
+package com.library_database.library_app.view;
 
-import com.library_database.library_app.Controller.*;
-import com.library_database.library_app.Model.*;
+import com.library_database.library_app.controller.*;
+import com.library_database.library_app.model.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -125,13 +125,12 @@ public class AdminScene extends Scene implements Initializable {
     @FXML
     private Button searchAccountReset;
 
-
-
     private Stage stage;
     private static final AdminController adminController = new AdminController();
 
     public AdminScene(){}
 
+    // Handle data from create book dialog
     public static void handleBookData(int bookID, String title, String author, double rating,
                                       int length, int year, boolean available) {
         boolean createBookSuccess;
@@ -144,26 +143,30 @@ public class AdminScene extends Scene implements Initializable {
         }
 
         if (createBookSuccess){
+            // Book creation success
             showAlert(AdminScenario.BOOK_CREATION_SUCCESS, "Successfully created book #" + bookID + ".");
         }
         else {
+            // Error in creating book
             showAlert(AdminScenario.BOOK_CREATION_FAILURE, "The book could not created.");
         }
 
     }
-
+    // Handle data from create loan dialog
     public static void handleLoanData(int bookID, String title, String borrower,
                                       Date borrowDate, Date returnDate, boolean overdue) {
         int potentialID;
+        // Check if any inputs are missing
         if (bookID == -1 || title.isEmpty() || borrower.isEmpty() || borrowDate == null || returnDate == null) {
             potentialID = 0;
         }
 
         else {
+            // Process the creation of loan
             potentialID = adminController.processCreateLoan(bookID, title, borrower,
                     borrowDate, returnDate, overdue);
         }
-
+        // Success
         if (potentialID != 0 && potentialID != 1 && potentialID != 2 && potentialID != 3){
             String returnedID = Integer.toString(potentialID);
 
@@ -171,25 +174,29 @@ public class AdminScene extends Scene implements Initializable {
                      returnedID +  ".");
         }
         else if (potentialID == 0) {
+            // Some other error occurred
             showAlert(AdminScenario.LOAN_CREATION_FAILURE, "Loan creation failed. " +
                     "Something went wrong and the loan could not be created.");
         }
         else if (potentialID == 1){
+            // Username didn't exist
             showAlert(AdminScenario.LOAN_CREATION_FAILURE, "Loan creation failed. " +
                     "That username does not exist.");
         }
         else if (potentialID == 2) {
+            // Account was not an user
             showAlert(AdminScenario.LOAN_CREATION_FAILURE, "Loan creation failed. " +
                     "Loans cannot be placed under an admin");
         }
         else {
+            // Book ID did not equal book title
             showAlert(AdminScenario.LOAN_CREATION_FAILURE, "Loan creation failed. " +
                     "Existing Book IDs need to remain consistent with its corresponding title.");
         }
 
 
     }
-
+    // Handle data from edit book dialog
     public static void handleEditBookData(int bookID, String title, String author,
                                           double rating, int length, int year, boolean available) {
         boolean editBookSuccess = adminController.processEditBook(bookID, title, author, rating, length, year, available);
@@ -202,7 +209,9 @@ public class AdminScene extends Scene implements Initializable {
         }
     }
 
+    // Handle data from edit loan dialog
     public static void handleEditLoanData(int loanID, String borrower, Date borrowDate, Date returnDate, boolean overdue) {
+        // Process loan edit
         boolean editLoanSuccess = adminController.processEditLoan(loanID, borrower, borrowDate, returnDate, overdue);
 
         if (editLoanSuccess){
@@ -213,7 +222,9 @@ public class AdminScene extends Scene implements Initializable {
         }
     }
 
+    // Handle data from create account dialog
     public static void handleAccountData(String username, String password, boolean admin) {
+        // Process create account
         String potentialUsername = adminController.processCreateAccount(username, password, admin);
 
         if (potentialUsername != null){
@@ -226,13 +237,14 @@ public class AdminScene extends Scene implements Initializable {
 
     }
 
-
+    // Set the stage
     @FXML
     public void setStage(Stage stage){
         this.stage = stage;
     }
 
 
+    // Handle logout
     @FXML
     private void handleLogout() throws IOException {
         // Load Login Scene
@@ -244,6 +256,7 @@ public class AdminScene extends Scene implements Initializable {
 
     }
 
+    // Initialize the external controller and populate tables
     public void initializeAdminController(AccountList accList, String username){
         adminController.setAdminAndPopulate(accList.getAccount(username), accList);
         populateTableView(0, adminSearchTable, adminController, adminBookID);
@@ -251,6 +264,8 @@ public class AdminScene extends Scene implements Initializable {
         populateTableView(2, adminAccountTable, adminController, adminAccountUsername);
 
     }
+
+    // Handle remove book button
     @FXML
     public void handleRemoveBook(){
         Book book = adminSearchTable.getSelectionModel().getSelectedItem();
@@ -268,6 +283,7 @@ public class AdminScene extends Scene implements Initializable {
 
     }
 
+    // Handle search function for books
     @FXML
     public void handleSearchBooks() throws SQLException, IOException {
         String author = searchFieldAuthor.getText();
@@ -292,6 +308,7 @@ public class AdminScene extends Scene implements Initializable {
 
     }
 
+    // Handle search function for loans
     @FXML
     public void handleSearchLoans() throws SQLException, IOException {
         String borrower = searchFieldBorrow.getText();
@@ -327,6 +344,7 @@ public class AdminScene extends Scene implements Initializable {
 
     }
 
+    // Handle remove loan button
     @FXML
     public void handleRemoveLoan(){
         Loan loan = adminLoanTable.getSelectionModel().getSelectedItem();
@@ -343,6 +361,7 @@ public class AdminScene extends Scene implements Initializable {
 
     }
 
+    // Handle create book button
     @FXML
     public void handleCreateBook() throws IOException {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -382,6 +401,7 @@ public class AdminScene extends Scene implements Initializable {
         populateTableView(0, adminSearchTable, adminController, adminBookID);
     }
 
+    // Handle edit book button
     @FXML
     public void handleEditBook() throws IOException {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -423,7 +443,7 @@ public class AdminScene extends Scene implements Initializable {
         populateTableView(0, adminSearchTable, adminController, adminBookID);
     }
 
-
+    // Handle search function for accounts
     @FXML
     public void handleSearchAccounts() throws SQLException, IOException {
         String username = searchUsername.getText();
@@ -440,13 +460,14 @@ public class AdminScene extends Scene implements Initializable {
 
     }
 
+    // Handle reset button to reset account table
     @FXML
     public void handleResetSearchAccounts() throws SQLException, IOException {
         adminController.processSearchAccounts("", false, true);
         populateTableView(2, adminAccountTable, adminController, adminAccountUsername);
     }
 
-
+    // Handle create loan button
     @FXML
     public void handleCreateLoan() throws IOException {
         Dialog<ButtonType> loanDialog = new Dialog<>();
@@ -488,6 +509,7 @@ public class AdminScene extends Scene implements Initializable {
         }
     }
 
+    // Handle edit loan button
     @FXML
     public void handleEditLoan() throws IOException {
         Dialog<ButtonType> loanDialog = new Dialog<>();
@@ -530,6 +552,7 @@ public class AdminScene extends Scene implements Initializable {
         }
     }
 
+    // Handle create account button
     @FXML
     public void handleCreateAccount() throws IOException {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -569,7 +592,7 @@ public class AdminScene extends Scene implements Initializable {
         populateTableView(2, adminAccountTable, adminController, adminAccountUsername);
     }
 
-
+    // Handle remove account button
     @FXML
     public void handleRemoveAccount(){
         Account account = adminAccountTable.getSelectionModel().getSelectedItem();
@@ -577,18 +600,22 @@ public class AdminScene extends Scene implements Initializable {
         boolean removeBookSuccess = adminController.processRemoveAccount(account.getUsername());
 
         if (removeBookSuccess){
+            // Reset account table and show confirmation if successful
             populateTableView(2, adminAccountTable, adminController, adminAccountUsername);
             populateTableView(1, adminLoanTable, adminController, adminTableLoanID);
             showAlert(AdminScenario.ACCOUNT_REMOVAL_SUCCESS, "Successfully removed account: " +
                     account.getUsername() + ".");
         }
         else {
+            // Show error if not successful
             showAlert(AdminScenario.ACCOUNT_REMOVAL_FAILURE, "Could not remove account: " +
                     account.getUsername() + ".");
         }
 
     }
 
+
+    // Show an alert for any success or error that occurs
     public static void showAlert(AdminScenario scenario, String userMessage) {
         Alert alert;
         if ((scenario != AdminScenario.LOAN_CREATION_SUCCESS && scenario != AdminScenario.BOOK_CREATION_SUCCESS
@@ -632,6 +659,7 @@ public class AdminScene extends Scene implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Set up book table, loan table, and account table
         adminBookID.setCellValueFactory(new PropertyValueFactory<>("bookID"));
         adminAuthor.setCellValueFactory(new PropertyValueFactory<>("author"));
         adminRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
@@ -655,6 +683,7 @@ public class AdminScene extends Scene implements Initializable {
         int maxValue = 2024;
         int minValue = 1900;
 
+        // Similar to User Scene this sets up the spinner
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory
                 .IntegerSpinnerValueFactory(minValue, maxValue) {
             @Override
@@ -681,11 +710,13 @@ public class AdminScene extends Scene implements Initializable {
         yearSpinner.setValueFactory(valueFactory);
         yearSpinner.getValueFactory().setValue(null);
 
+        // Sets up drop down page length
         pageCombo.setItems(FXCollections.observableArrayList(
                 "Any", "0-100", "101-200", "201-300", "301-400", "400-500", "More than 500"));
 
+        // Hides the account password in the account table
         adminAccountPassword.setCellFactory(column -> {
-            TableCell<Account, String> cell = new TableCell<>() {
+            return new TableCell<Account, String>() {
 
                 @Override
                 protected void updateItem(String item, boolean empty) {
@@ -702,7 +733,6 @@ public class AdminScene extends Scene implements Initializable {
                     }
                 }
             };
-            return cell;
         });
     }
 }

@@ -1,8 +1,8 @@
-package com.library_database.library_app.View;
+package com.library_database.library_app.view;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.library_database.library_app.Controller.*;
+import com.library_database.library_app.controller.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -39,7 +39,7 @@ public class LoginScene implements Initializable {
     private Tab currentTab = userTab;
     private Stage stage;
 
-    Authenticator auth;
+    final Authenticator auth;
 
     @FXML
     public void setStage(Stage stage) {
@@ -50,11 +50,14 @@ public class LoginScene implements Initializable {
         auth = new Authenticator();
     }
 
+    // Initialize the scene
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         currentTab = tabPane.getSelectionModel().getSelectedItem();
         isInitialized = true;
     }
+
+    // Handle login button
     @FXML
     private void handleLogin() {
         LoginScenario loginSuccess;
@@ -65,10 +68,10 @@ public class LoginScene implements Initializable {
                 String password = userPass.getText();
                 loginSuccess = auth.processLogin(username, password, false);
 
-                if (loginSuccess == null){
+                if (loginSuccess == null){ // Checks if login was successful
                     // Load User Scene
                     FXMLLoader newLoader = Scene.loadScene(stage, "/com/library_database/library_app/user_scene.fxml",
-                            "User View");
+                            "User view");
                     UserScene userScene = newLoader.getController();
                     userScene.setStage(stage);
                     userScene.initializeController(auth.getAccList(), username);
@@ -84,10 +87,10 @@ public class LoginScene implements Initializable {
                 loginSuccess = auth.processLogin(username, password, true);
 
 
-                if (loginSuccess==null){
+                if (loginSuccess==null){ // Checks if login was successful
                     // Load Admin Scene
                     FXMLLoader newLoader = Scene.loadScene(stage, "/com/library_database/library_app/admin_scene.fxml",
-                            "Admin View");
+                            "Admin view");
                     AdminScene adminScene = newLoader.getController();
                     adminScene.setStage(stage);
                     adminScene.initializeAdminController(auth.getAccList(), username);
@@ -104,13 +107,15 @@ public class LoginScene implements Initializable {
         }
     }
 
+
+    // Handle register button
     @FXML
     private void handleRegister() {
 
         LoginScenario isValidRegistration = null;
 
         try {
-            if (currentTab.equals(userTab)) {
+            if (currentTab.equals(userTab)) { //
                 String username = userName.getText();
                 String password = userPass.getText();
                 isValidRegistration = auth.processRegistration(username, password, false);
@@ -127,6 +132,8 @@ public class LoginScene implements Initializable {
                 e.printStackTrace();
             }
     }
+
+    // Show errors or alerts
     public void showAlert(LoginScenario scenario) {
         Alert alert;
         if (scenario != LoginScenario.REGISTRATION_SUCCESS){
@@ -156,6 +163,7 @@ public class LoginScene implements Initializable {
 
     }
 
+    // Handle a change in the tab between admin and user
     @FXML
     private void handleTabSelectionChanged() {
         if (isInitialized) {

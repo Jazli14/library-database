@@ -1,12 +1,13 @@
-package com.library_database.library_app.Model;
+package com.library_database.library_app.model;
 
-import com.library_database.library_app.Controller.AdminController;
-import com.library_database.library_app.Controller.UserController;
+import com.library_database.library_app.controller.AdminController;
+import com.library_database.library_app.controller.UserController;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Library {
+    // Entity that contains all the books, loans and accounts in three separate hash maps
     private final Map<Integer, Book> books;
     private final Map<Integer, Loan> loans;
     private AccountList accountList;
@@ -60,14 +61,17 @@ public class Library {
 
     public Account removeAccount(String username) { return accountList.removeAccount(username);}
 
+
+    // Add account operation
     public Account addAccount(String username, String password, boolean admin) {
+        // Check if the username is taken
         boolean usernameTaken = accountList.accountExists(username);
-        if (!usernameTaken && admin){
+        if (!usernameTaken && admin){ // If username isn't taken, and it's an admin create an admin account
             Admin newAdmin = new Admin(username, password);
             accountList.add(newAdmin);
             return newAdmin;
         }
-        else if (!usernameTaken){
+        else if (!usernameTaken){ // If username isn't taken, and it's not an admin then create a user account
             User newUser = new User(username, password);
             accountList.add(newUser);
             return newUser;

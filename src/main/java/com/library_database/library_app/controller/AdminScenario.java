@@ -1,4 +1,4 @@
-package com.library_database.library_app.Controller;
+package com.library_database.library_app.controller;
 
 public enum AdminScenario {
     BOOK_CREATION_SUCCESS,
@@ -17,8 +17,5 @@ public enum AdminScenario {
     ACCOUNT_CREATE_SUCCESS,
     ACCOUNT_CREATE_FAILURE,
     ACCOUNT_REMOVAL_SUCCESS,
-    ACCOUNT_REMOVAL_FAILURE,
-    LOAN_ACCOUNT_EXIST,
-    LOAN_ACCOUNT_ADMIN,
-    LOAN_ID_MISMATCH
+    ACCOUNT_REMOVAL_FAILURE
 }

@@ -1,8 +1,10 @@
-package com.library_database.library_app.Model;
+package com.library_database.library_app.model;
 
 import java.text.DecimalFormat;
 
 public class Book {
+    // Entity representing a book that can be loaned or returned by a User
+    // Admins can create or edit the book
     private final int bookID;
     private String title;
     private String author;
@@ -41,6 +43,7 @@ public class Book {
         title = newTitle;
     }
     public double getRating(){
+        // Return the rating in a double datatype
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         String rounded = decimalFormat.format(rating);
         return Double.parseDouble(rounded);

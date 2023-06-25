@@ -1,20 +1,14 @@
-package com.library_database.library_app.View;
-
+package com.library_database.library_app.view;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.util.converter.IntegerStringConverter;
 
 import java.net.URL;
 import java.sql.Date;
 import java.util.ResourceBundle;
-import java.util.function.UnaryOperator;
 
-public class CreateLoanDialog implements Initializable {
-    @FXML
-    private TextField bookIDInput;
-
+public class EditLoanDialog implements Initializable {
     @FXML
     private DatePicker borrowInput;
 
@@ -27,24 +21,12 @@ public class CreateLoanDialog implements Initializable {
     @FXML
     private DatePicker returnInput;
 
-    @FXML
-    private TextField titleInput;
-
     private Dialog dialog;
+
+    private int loanID;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        UnaryOperator<TextFormatter.Change> newFilter = change -> {
-            String text = change.getControlNewText();
-            if (text.matches("[0-9]*")) {
-                return change;
-            }
-            return null;
-        };
-
-        TextFormatter<Integer> digitFormatter = new TextFormatter<>(new IntegerStringConverter(), 0, newFilter);
-        bookIDInput.setTextFormatter(digitFormatter);
-        bookIDInput.setText("");
     }
     public void setDialogStage(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
@@ -53,15 +35,6 @@ public class CreateLoanDialog implements Initializable {
     public void handleOkButton() {
         // Retrieve the entered data
         String borrower = borrowerInput.getText();
-
-        int bookID;
-        if (bookIDInput.getText().isEmpty()){
-            bookID = -1;
-        }
-        else {
-            bookID = Integer.parseInt(bookIDInput.getText());
-        }
-        String title = titleInput.getText();
         Date borrowDate;
         if (borrowInput.getValue() != null){
             borrowDate = Date.valueOf(borrowInput.getValue());
@@ -76,11 +49,10 @@ public class CreateLoanDialog implements Initializable {
         else {
             returnDate = null;
         }
-
         boolean overdue = overdueInput.isSelected();
 
         // Pass the data back to the AdminScene or perform any other required action
-        AdminScene.handleLoanData(bookID, title, borrower, borrowDate, returnDate, overdue);
+        AdminScene.handleEditLoanData(loanID, borrower, borrowDate, returnDate, overdue);
 
         // Close the dialog
         dialog.close();
@@ -88,6 +60,9 @@ public class CreateLoanDialog implements Initializable {
 
     public void handleCancelButton(){
         dialog.close();
+    }
+    public void setLoanID(int loanID) {
+        this.loanID = loanID;
     }
 
 

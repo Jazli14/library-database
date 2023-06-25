@@ -1,9 +1,9 @@
-package com.library_database.library_app.Controller;
+package com.library_database.library_app.controller;
 
-import com.library_database.library_app.Model.Book;
-import com.library_database.library_app.Model.Library;
-import com.library_database.library_app.Model.Loan;
-import com.library_database.library_app.Model.Account;
+import com.library_database.library_app.model.Book;
+import com.library_database.library_app.model.Library;
+import com.library_database.library_app.model.Loan;
+import com.library_database.library_app.model.Account;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,12 +12,16 @@ import java.time.LocalDate;
 import java.util.Properties;
 
 public abstract class MasterController {
+    // Super class of UserController and AdminController
+    // Has ability to establish connection to database and to populate the local library of accounts, books and loans
+
     public Library library;
 
+    // Establish a connection to the PostgreSQL database
     public static Connection establishConnection() throws IOException, SQLException {
         Properties props = new Properties();
-        try (FileInputStream fis = new FileInputStream(
-                "src/main/java/com/library_database/library_app/Controller/config.properties")) {
+        try (FileInputStream fis = new FileInputStream( // Access login credentials from file
+                "src/main/java/com/library_database/library_app/controller/config.properties")) {
             props.load(fis);
         }
 
@@ -25,10 +29,12 @@ public abstract class MasterController {
         String username = props.getProperty("dbUsername");
         String password = props.getProperty("dbPassword");
 
+        // Attempt to establish connection with credentials
         return DriverManager.getConnection(url, username, password);
     }
 
 
+    // Populate local library of books, loans and accounts
     public void populateLibrary(Account client){
         try {
             Class.forName("org.postgresql.Driver");
@@ -84,6 +90,7 @@ public abstract class MasterController {
 
     }
 
+    // Helper function to add a new loan with the given data to populate the library
     private void executeLoanQuery(PreparedStatement statement) throws SQLException {
         try (ResultSet loansResultSet = statement.executeQuery()) {
             while (loansResultSet.next()) {
@@ -117,9 +124,12 @@ public abstract class MasterController {
         }
     }
 
+
+    // Update loans in SQL databases' loan table
     public void updateLoans(Loan loan, int action) {
         try (Connection connection = establishConnection()) {
             if (action == 0) {
+                // Insert a new loan to loan table
                 String insertLoanQuery = "INSERT INTO loans (loan_id, book_id, title, borrower, borrow_date," +
                         " return_date, overdue) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement statement = connection.prepareStatement(insertLoanQuery)) {
@@ -134,14 +144,16 @@ public abstract class MasterController {
 
                 }
             } else if (action == 1){
+                // Delete a loan from the loan table with the given loan ID
                 String deleteLoanQuery = "DELETE FROM loans WHERE loan_id = ?";
                 try (PreparedStatement statement = connection.prepareStatement(deleteLoanQuery)) {
                     statement.setInt(1, loan.getLoanID()); // Set the loan_id value
                     statement.executeUpdate();
                 }
             } else {
-                String deleteLoanQuery = "UPDATE loans SET overdue = ? WHERE loan_id = ?";
-                try (PreparedStatement statement = connection.prepareStatement(deleteLoanQuery)) {
+                // Update a specific loan's overdue state
+                String overdueLoanQuery = "UPDATE loans SET overdue = ? WHERE loan_id = ?";
+                try (PreparedStatement statement = connection.prepareStatement(overdueLoanQuery)) {
                     statement.setBoolean(1, loan.getIsOverdue()); // Set the loan_id value
                     statement.setInt(2, loan.getLoanID());
                     statement.executeUpdate();
@@ -153,6 +165,7 @@ public abstract class MasterController {
 
     }
 
+    // Check if the loan is overdue
     public boolean checkOverdue(Date returnDate){
         LocalDate currentDate = LocalDate.now();
         LocalDate convertedDueDate = returnDate.toLocalDate();
@@ -160,9 +173,10 @@ public abstract class MasterController {
 
     }
 
-
+    // Handle search books function for both User and Admin
     public boolean searchBooks(String title, String author, boolean minOrMax, double rating,
                                int minLength, int maxLength, int year, boolean isUnavailable) throws SQLException, IOException {
+        // Clear library of books for new SQL search query
         library.clearBooks();
         try {
             Class.forName("org.postgresql.Driver");
@@ -172,17 +186,16 @@ public abstract class MasterController {
 
         StringBuilder selectBooks = new StringBuilder("SELECT * FROM books WHERE 1=1");
 
-
-        if (!title.isEmpty()) {
+        if (!title.isEmpty()) { // If title input isn't empty then add the filter
             selectBooks.append(" AND LOWER(title) LIKE LOWER(?)");
         }
 
-        if (!author.isEmpty()) {
+        if (!author.isEmpty()) { // If author input isn't empty then add the filter
             selectBooks.append(" AND LOWER(authors) LIKE LOWER(?)");
         }
 
 
-        if (!(minLength == -1 && maxLength == -1)) {
+        if (!(minLength == -1 && maxLength == -1)) { // If page length isn't empty then add filter
             if (maxLength == -1) {
                 selectBooks.append(" AND num_pages > 500");
             } else {
@@ -191,14 +204,14 @@ public abstract class MasterController {
 
         }
 
-        if (year != -1) {
+        if (year != -1) { // If year input isn't empty then add filter
             selectBooks.append(" AND year = ?");
         }
 
-        if (!isUnavailable){
+        if (!isUnavailable){ // If book unavailability isn't empty then add filter
             selectBooks.append(" AND ready = ?");
         }
-        if (!minOrMax) {
+        if (!minOrMax) { // Check if the user wanted a minimum or maximum rating
             // False = min
             selectBooks.append(" AND rating >= ?");
         } else {
@@ -206,42 +219,47 @@ public abstract class MasterController {
 
         }
 
-
         String query = selectBooks.toString();
 
-        try (Connection connection = establishConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = establishConnection()) { // Connect to database
+            try (PreparedStatement statement = connection.prepareStatement(query)) { // Create SQL query
 
                 int parameterIndex = 1;
 
                 if (!title.isEmpty()) {
+                    // Insert title
                     statement.setString(parameterIndex++, "%" + title.toLowerCase() + "%");
                 }
 
                 if (!author.isEmpty()) {
+                    // Insert author
                     statement.setString(parameterIndex++, "%" + author.toLowerCase() + "%");
                 }
 
 
                 if (minLength != -1 && maxLength != -1) {
+                    // Insert page length
                     statement.setInt(parameterIndex++, minLength);
                     statement.setInt(parameterIndex++, maxLength);
                 }
 
                 if (year != -1) {
+                    // Insert year
                     statement.setInt(parameterIndex++, year);
                 }
 
                 if (!isUnavailable){
+                    // Insert availability
                     statement.setBoolean(parameterIndex++, true);
                 }
 
+                // Insert rating
                 statement.setDouble(parameterIndex, rating);
 
                 ResultSet resultSet = statement.executeQuery();
 
                 // Process the search results
-                while (resultSet.next()) {
+                while (resultSet.next()) { // Loop through each of the results
                     // Retrieve data from the result set
                     int bookID = resultSet.getInt("book_id");
                     String bookTitle = resultSet.getString("title");
@@ -250,8 +268,11 @@ public abstract class MasterController {
                     int bookNumPages = resultSet.getInt("num_pages");
                     int bookYear = resultSet.getInt("year");
                     boolean bookAvailability = resultSet.getBoolean("ready");
+
+                    // Create a new Book with the given data
                     Book newBook = new Book(bookID, bookTitle, bookAuthor,
                             bookRating, bookNumPages, bookYear, bookAvailability);
+                    // Add to library
                     library.addBook(newBook);
 
                 }

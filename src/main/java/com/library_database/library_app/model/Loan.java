@@ -1,4 +1,4 @@
-package com.library_database.library_app.Model;
+package com.library_database.library_app.model;
 
 import java.sql.Date;
 
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class Loan {
+    // Loan of a book linking a User to a Book
     private final int loanID;
     private final int bookID;
     private final String title;
@@ -56,6 +57,7 @@ public class Loan {
     }
 
     private int generateLoanID(Library library) {
+        // Generate a random new loan ID that is not currently in the loan table
         Map<Integer, Loan> currentLoans = library.getLoans();
         Random random = new Random();
         int newLoanID;

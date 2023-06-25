@@ -1,6 +1,6 @@
 package com.library_database.library_app;
 
-import com.library_database.library_app.View.LoginScene;
+import com.library_database.library_app.view.LoginScene;
 import javafx.application.Application;
 import javafx.fxml.*;
 import javafx.scene.*;
@@ -16,7 +16,7 @@ public class LibraryApp extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(LibraryApp.class.getResource("login_scene.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 350);
 
-        // Create Login Scene Controller
+        // Create Login Scene controller
         LoginScene loginScene = fxmlLoader.getController();
         loginScene.setStage(stage);
 

@@ -6,10 +6,10 @@ module com.library_database.library_app {
 
 
     opens com.library_database.library_app to javafx.fxml;
-    opens com.library_database.library_app.View to javafx.fxml;
+    opens com.library_database.library_app.view to javafx.fxml;
     exports com.library_database.library_app;
-    exports com.library_database.library_app.View;
-    exports com.library_database.library_app.Controller;
-    opens com.library_database.library_app.Controller to javafx.fxml;
-    exports com.library_database.library_app.Model;
+    exports com.library_database.library_app.view;
+    exports com.library_database.library_app.controller;
+    opens com.library_database.library_app.controller to javafx.fxml;
+    exports com.library_database.library_app.model;
 }

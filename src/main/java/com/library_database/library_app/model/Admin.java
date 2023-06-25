@@ -1,8 +1,10 @@
-package com.library_database.library_app.Model;
+package com.library_database.library_app.model;
 
 import java.sql.Date;
 
 public class Admin extends Account {
+    // Allowed to create or remove books, loans or accounts and can edit books and loans
+    // This account type cannot create or have loans
     public Admin(String username, String password){
         super(username, password);
         setAdmin(true);
@@ -46,7 +48,7 @@ public class Admin extends Account {
     }
 
     public Loan removeLoan(Library library, int loanID){
-        if (library.containsLoan(loanID)){
+        if (library.containsLoan(loanID)){ // Check if loan ID is in loan table
             Loan removedLoan = library.removeLoan(loanID);
             System.out.println("Removed loan successfully.");
             return removedLoan;

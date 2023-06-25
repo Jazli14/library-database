@@ -1,9 +1,11 @@
-package com.library_database.library_app.Model;
+package com.library_database.library_app.model;
 
 import java.io.Serializable;
 
 
 public abstract class Account implements Serializable {
+    // Superclass that encompasses both a User and an Admin
+    // Both have a username, password and if they are an admin
     private final String username;
     private final String password;
     private boolean isAdminRole;

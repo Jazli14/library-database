@@ -1,4 +1,4 @@
-package com.library_database.library_app.View;
+package com.library_database.library_app.view;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -37,6 +37,7 @@ public class EditBookDialog implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Ensure only numbers can be inputted for year and number of pages
         UnaryOperator<TextFormatter.Change> numericFilter = change -> {
             String newText = change.getControlNewText();
             if (newText.matches("[0-9]*")) {
@@ -53,6 +54,7 @@ public class EditBookDialog implements Initializable {
         pageInput.setTextFormatter(pageFormatter);
         pageInput.setText("");
 
+        // Ensure only integer numbers can be inputted for year OR decimal numbers
         UnaryOperator<TextFormatter.Change> ratingFilter = change -> {
             String newText = change.getControlNewText();
             if (newText.matches("[0-9]*\\.?[0-9]*")) {
@@ -82,6 +84,7 @@ public class EditBookDialog implements Initializable {
             rating = Double.parseDouble(ratingInput.getText());
         }
         int length;
+        // Check if null page input
         if (pageInput.getText().isEmpty()){
             length = -1;
         }
@@ -90,6 +93,7 @@ public class EditBookDialog implements Initializable {
         }
 
         int year;
+        // Check if null year input
         if (yearInput.getText().isEmpty()){
             year = -1;
 
@@ -99,7 +103,7 @@ public class EditBookDialog implements Initializable {
         }
         boolean available = availableInput.isSelected();
 
-        // Pass the data back to the AdminScene
+        // Pass the all retrieved data back to the AdminScene
         AdminScene.handleEditBookData(this.bookID, title, author, rating, length, year, available);
 
         // Close the dialog
@@ -114,9 +118,6 @@ public class EditBookDialog implements Initializable {
         this.bookID = bookID;
     }
 
-    public int getBookID() {
-        return bookID;
-    }
 }
 
 

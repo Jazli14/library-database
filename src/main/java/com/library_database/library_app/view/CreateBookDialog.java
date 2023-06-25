@@ -1,4 +1,4 @@
-package com.library_database.library_app.View;
+package com.library_database.library_app.view;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

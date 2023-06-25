@@ -1,7 +1,7 @@
-package com.library_database.library_app.View;
+package com.library_database.library_app.view;
 
-import com.library_database.library_app.Controller.MasterController;
-import com.library_database.library_app.Model.*;
+import com.library_database.library_app.controller.MasterController;
+import com.library_database.library_app.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -24,19 +24,20 @@ public class Scene {
         return loader;
     }
 
+    // Populate the given table and sort by the category
     protected void populateTableView(int typeOfClass, TableView table, MasterController controller, TableColumn category) {
         switch (typeOfClass) {
-            case 0 -> {
+            case 0 -> { // The book table
                 ObservableList<Book> bookList = FXCollections.observableArrayList();
                 bookList.addAll(controller.library.getBooks().values());
                 table.setItems(bookList);
             }
-            case 1 -> {
+            case 1 -> { // The loan table
                 ObservableList<Loan> loanList = FXCollections.observableArrayList();
                 loanList.addAll(controller.library.getLoans().values());
                 table.setItems(loanList);
             }
-            case 2 -> {
+            case 2 -> { // The account table
                 ObservableList<Account> accountList = FXCollections.observableArrayList();
                 accountList.addAll(controller.library.getAccounts().values());
                 table.setItems(accountList);

@@ -1,9 +1,10 @@
-package com.library_database.library_app.Model;
+package com.library_database.library_app.model;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class AccountList {
+    // HashMap data structure of accounts of key: username and value: account
     private final Map<String, Account> accounts = new HashMap<>();
     public void add(Account account) {
         accounts.put(account.getUsername(), account);
