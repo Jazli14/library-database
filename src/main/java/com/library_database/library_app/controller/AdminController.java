@@ -9,7 +9,8 @@ import java.util.Objects;
 public class AdminController extends MasterController {
     private Admin client;
 
-    public AdminController() {
+    public AdminController() throws SQLException, IOException {
+        super();
         library = new Library(this);
     }
 
@@ -17,7 +18,7 @@ public class AdminController extends MasterController {
         this.client = client;
     }
 
-    // Process the creation of a new book
+    // Process the creation of a new book through given information
     public boolean processCreateBook(int bookID, String title, String author, double rating,
                                      int num_pages, int year, boolean availability) {
         Book newBook = client.createBook(library, bookID, title, author, rating, num_pages, year, availability);
@@ -119,186 +120,28 @@ public class AdminController extends MasterController {
 
     }
 
-    // Update SQL database book table by creating or deleting a book
-    private void updateBookDatabase(Book book, boolean createOrDelete) {
-        try (Connection connection = establishConnection()) {
-            if (createOrDelete) { // Check for create or delete
-                // Create a new book
-                String insertBookQuery = "INSERT INTO books (book_id, title, authors, rating, num_pages, year, " +
-                        "ready) VALUES (?, ?, ?, ?, ?, ?, ?)";
-                try (PreparedStatement statement = connection.prepareStatement(insertBookQuery)) {
-                    // Add the attributes to the new book
-                    statement.setInt(1, book.getBookID());
-                    statement.setString(2, book.getTitle());
-                    statement.setString(3, book.getAuthor());
-                    statement.setDouble(4, book.getRating());
-                    statement.setInt(5, book.getNum_pages());
-                    statement.setInt(6, book.getYear());
-                    statement.setBoolean(7, book.getAvailability());
-                    statement.executeUpdate();
-
-                }
-            } else {
-                // Delete a book corresponding to the book ID
-                String deleteBookQuery = "DELETE FROM books WHERE book_id = ?";
-                try (PreparedStatement statement = connection.prepareStatement(deleteBookQuery)) {
-                    statement.setInt(1, book.getBookID()); // Set the book ID value
-                    statement.executeUpdate();
-
-                }
-            }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-        }
-
+    // Update SQL database book table by creating or deleting a book through DatabaseManager
+    private void updateBookDatabase(Book book, boolean createOrDelete){
+        DatabaseManager.adminUpdateBookDatabase(book, createOrDelete);
     }
 
-    // Update the SQL database account table
-    private void updateAccounts(Account account, boolean createOrDelete) {
-        try (Connection connection = establishConnection()) {
-            if (createOrDelete) { // Check if creation or deletion
-                // Create account
-                String insertAccountQuery = "INSERT INTO accounts (username, password, admin) VALUES (?, ?, ?)";
-                try (PreparedStatement statement = connection.prepareStatement(insertAccountQuery)) {
-                    statement.setString(1, account.getUsername());
-                    statement.setString(2, account.getPassword());
-                    statement.setBoolean(3, account.getIsAdminRole());
-                    statement.executeUpdate();
-
-                }
-            } else {
-                // Delete account with the given username
-                String deleteAccountQuery = "DELETE FROM accounts WHERE username = ?";
-                try (PreparedStatement statement = connection.prepareStatement(deleteAccountQuery)) {
-                    statement.setString(1, account.getUsername()); // Set the account username
-                    statement.executeUpdate();
-                }
-                // Delete all loans the account had
-                String deleteAccountLoansQuery = "DELETE FROM loans WHERE borrower = ?";
-                try (PreparedStatement statement = connection.prepareStatement(deleteAccountLoansQuery)) {
-                    statement.setString(1, account.getUsername());
-                    statement.executeUpdate();
-                }
-            }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-        }
-
+    // Update the SQL database account table through DatabaseManager
+    private void updateAccounts(Account account, boolean createOrDelete){
+        DatabaseManager.adminUpdateAccounts(account, createOrDelete);
     }
 
-
-    // Overloaded helper function that edits SQL database book table with given data
+    // Overloaded helper function that edits SQL database book table with given data through DatabaseManager
     private boolean editSQLDatabase(int bookID, String title, String author, double rating, int num_pages,
                                     int year, boolean available) {
-        try (Connection connection = establishConnection()) {
-            StringBuilder sqlBuilder = new StringBuilder();
-            sqlBuilder.append("UPDATE books SET");
-            if (!title.isEmpty()) {
-                sqlBuilder.append(" title = ?,");
-            }
-
-            if (!author.isEmpty()) {
-                sqlBuilder.append(" authors = ?,");
-            }
-
-            if (rating != -1) {
-                sqlBuilder.append(" rating = ?,");
-            }
-            if (num_pages != -1) {
-                sqlBuilder.append(" num_pages = ?,");
-            }
-            if (year != -1) {
-                sqlBuilder.append(" year = ?,");
-            }
-
-            sqlBuilder.append(" ready = ? WHERE book_id = ?");
-
-            String sql = sqlBuilder.toString();
-
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                int parameterIndex = 1;
-
-                if (!title.isEmpty()) {
-                    statement.setString(parameterIndex++, title);
-                }
-                if (!author.isEmpty()) {
-                    statement.setString(parameterIndex++, author);
-                }
-
-                if (rating != -1) {
-                    statement.setDouble(parameterIndex++, rating);
-
-                }
-                if (num_pages != -1) {
-                    statement.setInt(parameterIndex++, num_pages);
-                }
-                if (year != -1) {
-                    statement.setInt(parameterIndex++, year);
-                }
-                statement.setBoolean(parameterIndex++, available);
-                statement.setInt(parameterIndex, bookID);
-
-                // Execute SQL query
-                int rowsAffected = statement.executeUpdate();
-                return rowsAffected > 0;
-            }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-        }
-
-        return false;
+            return DatabaseManager.adminUpdateDB(bookID, title, author, rating, num_pages, year, available);
     }
 
-    // Overloaded helper function that edits SQL database loan table with given data
+    // Overloaded helper function that edits SQL database loan table with given data through DatabaseManager
     private boolean editSQLDatabase(int loanID, String borrower, Date borrowDate, Date returnDate, boolean overdue) {
-        try (Connection connection = establishConnection()) {
-            StringBuilder sqlBuilder = new StringBuilder();
-            sqlBuilder.append("UPDATE loans SET");
-            if (!borrower.isEmpty()) { // Check if borrower input isn't empty
-                sqlBuilder.append(" borrower = ?,");
-            }
-
-            if (borrowDate != null) { // Check if borrow date isn't empty
-                sqlBuilder.append(" borrow_date = ?,");
-            }
-
-            if (returnDate != null) { // Check if return date isn't empty
-                sqlBuilder.append(" borrow_date = ?,");
-            }
-
-            sqlBuilder.append(" overdue = ? WHERE loan_id = ?");
-
-            String sql = sqlBuilder.toString();
-
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                // Set all the parameters to the string builder
-                int parameterIndex = 1;
-                if (!borrower.isEmpty()) {
-                    statement.setString(parameterIndex++, borrower);
-                }
-
-                if (borrowDate != null) {
-                    statement.setDate(parameterIndex++, borrowDate);
-                }
-
-                if (borrowDate != null) {
-                    statement.setDate(parameterIndex++, returnDate);
-                }
-                statement.setBoolean(parameterIndex++, overdue);
-                statement.setInt(parameterIndex, loanID);
-
-                // Execute SQL query
-                int rowsAffected = statement.executeUpdate();
-                return rowsAffected > 0;
-            }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-        }
-
-        return false;
+        return DatabaseManager.adminUpdateDB(loanID, borrower, borrowDate, returnDate, overdue);
     }
 
-    // Process the edit of a book
+    // Process the edit of a book and checking for valid input
     public boolean processEditBook(int bookID, String title, String author, double rating, int num_pages, int year,
                                    boolean available) {
         if (!title.isEmpty()) { // Check if the title isn't empty
@@ -328,7 +171,7 @@ public class AdminController extends MasterController {
         return editSQLDatabase(bookID, title, author, rating, num_pages, year, available);
     }
 
-    // Process a loan edit
+    // Process a loan edit and checking for valid input
     public boolean processEditLoan(int loanID, String borrower, Date borrowDate, Date returnDate, boolean overdue) {
         if (!borrower.isEmpty()) { // If borrower field isn't empty
             // Edit the borrower of the loan
@@ -357,9 +200,9 @@ public class AdminController extends MasterController {
 
     }
 
-    // Process the search of books
+    // Parse input properly to give to DatabaseManager to search for books in the database
     public boolean processSearchBooks(String title, String author, boolean minOrMax, double rating, String pageLength,
-                                      Integer year, boolean availability) throws SQLException, IOException {
+                                      Integer year, boolean availability) {
         int maxRange;
         int minRange;
         if (pageLength != null) {
@@ -388,149 +231,15 @@ public class AdminController extends MasterController {
         return searchBooks(title, author, minOrMax, rating, minRange, maxRange, intYear, availability);
     }
 
-    // Process the loan search
+    // Process the loan search through DatabaseManager
     public boolean processSearchLoans(String bookTitle, String borrower, Date sqlBorrowDate, Date sqlReturnDate,
-                                      boolean overdue) throws SQLException, IOException {
-        // Clear library of loans for new SQL query
-        library.clearLoans();
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (java.lang.ClassNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-
-        StringBuilder selectLoans = new StringBuilder("SELECT * FROM loans WHERE 1=1");
-
-        if (!borrower.isEmpty()) { // Check if account name isn't empty
-            selectLoans.append(" AND LOWER(borrower) LIKE LOWER(?)");
-        }
-
-        if (!bookTitle.isEmpty()) { // Check if book title isn't empty
-            selectLoans.append(" AND LOWER(title) LIKE LOWER(?)");
-        }
-
-        if (sqlBorrowDate != null) { // Check if borrow date isn't empty
-            selectLoans.append(" AND borrow_date >= ?");
-        }
-        if (sqlReturnDate != null) { // Check if return date isn't empty
-            selectLoans.append(" AND return_date <= ?");
-        }
-
-        // If any of the search criteria is activated then also add the loan overdue parameter
-        boolean searchCriteriaExists = !bookTitle.isEmpty() || !borrower.isEmpty() || sqlBorrowDate != null ||
-                sqlReturnDate != null || overdue;
-        if (searchCriteriaExists) {
-            selectLoans.append(" AND overdue = ?");
-        }
-
-        String query = selectLoans.toString();
-
-        try (Connection connection = establishConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                // Insert the given search criteria data
-                int parameterIndex = 1;
-
-                if (!borrower.isEmpty()) {
-                    statement.setString(parameterIndex++, "%" + borrower.toLowerCase() + "%");
-                }
-
-                if (!bookTitle.isEmpty()) {
-                    statement.setString(parameterIndex++, "%" + bookTitle.toLowerCase() + "%");
-                }
-
-                if (sqlBorrowDate != null) {
-                    statement.setDate(parameterIndex++, sqlBorrowDate);
-                }
-                if (sqlReturnDate != null) {
-                    statement.setDate(parameterIndex++, sqlReturnDate);
-                }
-
-                if (searchCriteriaExists) {
-                    statement.setBoolean(parameterIndex, overdue);
-                }
-
-                ResultSet resultSet = statement.executeQuery();
-
-                // Process the search results
-                while (resultSet.next()) {
-                    // Retrieve data from the result set
-                    int loanID = resultSet.getInt("loan_id");
-                    int bookID = resultSet.getInt("book_id");
-                    String loanTitle = resultSet.getString("title");
-                    String loanBorrower = resultSet.getString("borrower");
-                    Date returnDate = resultSet.getDate("return_date");
-                    Date borrowDate = resultSet.getDate("borrow_date");
-                    boolean loanOverdue = resultSet.getBoolean("overdue");
-
-                    // Create a new loan with the retrieved data
-                    Loan newLoan = new Loan(loanID, bookID, loanTitle, loanBorrower, borrowDate, returnDate,
-                            loanOverdue);
-                    // Add that loan to the library to display
-                    library.addLoan(newLoan);
-
-                }
-                return true;
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
+                                      boolean overdue) {
+        return DatabaseManager.adminProcessSearchLoans(bookTitle, borrower, sqlBorrowDate, sqlReturnDate, overdue, library);
     }
 
-
-    public boolean processSearchAccounts(String username, boolean admin, boolean reset) throws SQLException, IOException {
-        library.clearAccountsList();
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (java.lang.ClassNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-
-        StringBuilder selectAccounts = new StringBuilder("SELECT * FROM accounts WHERE 1=1");
-
-        if (!username.isEmpty() && !reset) { // Check if the username isn't empty and reset button not pressed
-            selectAccounts.append(" AND LOWER(username) LIKE LOWER(?)");
-        }
-        if (!reset){ // If reset button is pressed then add the criteria if they are an admin
-            selectAccounts.append(" AND admin = ?");
-        }
-
-        String query = selectAccounts.toString();
-
-        try (Connection connection = establishConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                // Insert the account search criteria data
-                int parameterIndex = 1;
-
-                if (!username.isEmpty() && !reset) {
-                    statement.setString(parameterIndex++, "%" + username.toLowerCase() + "%");
-                }
-
-                if (!reset) {
-                    statement.setBoolean(parameterIndex, admin);
-                }
-
-                ResultSet resultSet = statement.executeQuery();
-
-                // Process the search results
-                while (resultSet.next()) { // Loop through the queried results
-                    // Retrieve data from the result set
-                    String newAccountUsername = resultSet.getString("username");
-                    String newAccountPassword = resultSet.getString("password");
-                    boolean newAccountAdmin = resultSet.getBoolean("admin");
-
-                    // Add that account to the library to display
-                    library.addAccount(newAccountUsername, newAccountPassword, newAccountAdmin);
-
-                }
-                return true;
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
+    // Call DatabaseManager to search for accounts in the database
+    public boolean processSearchAccounts(String username, boolean admin, boolean reset){
+        return DatabaseManager.adminProcessSearchAccounts(username, admin, reset, library);
     }
 
 

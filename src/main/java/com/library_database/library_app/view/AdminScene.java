@@ -126,7 +126,15 @@ public class AdminScene extends Scene implements Initializable {
     private Button searchAccountReset;
 
     private Stage stage;
-    private static final AdminController adminController = new AdminController();
+    private static final AdminController adminController;
+
+    static {
+        try {
+            adminController = new AdminController();
+        } catch (SQLException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public AdminScene(){}
 
@@ -243,16 +251,30 @@ public class AdminScene extends Scene implements Initializable {
         this.stage = stage;
     }
 
-
-    // Handle logout
+    // Handle logout for admin scene
     @FXML
-    private void handleLogout() throws IOException {
-        // Load Login Scene
-        FXMLLoader newLoader = loadScene(stage, "/com/library_database/library_app/login_scene.fxml",
-                "Login To The Library Database");
+    private void handleLogout() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Logout Confirmation");
+        alert.setHeaderText("Logout?");
+        alert.setContentText("Are you sure you want to logout?");
 
-        LoginScene loginScene = newLoader.getController();
-        loginScene.setStage(stage);
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                // Perform logout operation here
+                System.out.println("Logout successful");
+                // Load Login Scene
+                FXMLLoader newLoader;
+                try {
+                    newLoader = loadScene(stage, "/com/library_database/library_app/login_scene.fxml",
+                            "Login To The Library Database");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                LoginScene loginScene = newLoader.getController();
+                loginScene.setStage(stage);
+            }
+        });
 
     }
 
@@ -285,7 +307,7 @@ public class AdminScene extends Scene implements Initializable {
 
     // Handle search function for books
     @FXML
-    public void handleSearchBooks() throws SQLException, IOException {
+    public void handleSearchBooks() {
         String author = searchFieldAuthor.getText();
         String pageLength = pageCombo.getValue();
         String title = searchField.getText();
@@ -310,7 +332,7 @@ public class AdminScene extends Scene implements Initializable {
 
     // Handle search function for loans
     @FXML
-    public void handleSearchLoans() throws SQLException, IOException {
+    public void handleSearchLoans() {
         String borrower = searchFieldBorrow.getText();
         String title = searchLoanTitle.getText();
 
@@ -445,7 +467,7 @@ public class AdminScene extends Scene implements Initializable {
 
     // Handle search function for accounts
     @FXML
-    public void handleSearchAccounts() throws SQLException, IOException {
+    public void handleSearchAccounts() {
         String username = searchUsername.getText();
 
         boolean admin = adminCheck.isSelected();
@@ -462,7 +484,7 @@ public class AdminScene extends Scene implements Initializable {
 
     // Handle reset button to reset account table
     @FXML
-    public void handleResetSearchAccounts() throws SQLException, IOException {
+    public void handleResetSearchAccounts() {
         adminController.processSearchAccounts("", false, true);
         populateTableView(2, adminAccountTable, adminController, adminAccountUsername);
     }

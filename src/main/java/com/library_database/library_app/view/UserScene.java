@@ -78,7 +78,7 @@ public class UserScene extends Scene implements Initializable {
 
     private Stage stage;
 
-    public UserScene(){
+    public UserScene() throws SQLException, IOException {
         userController = new UserController();
     }
 
@@ -169,7 +169,7 @@ public class UserScene extends Scene implements Initializable {
                 alert.setHeaderText("Return was successful.");
             }
             else {
-                alert.setHeaderText("Loan was unsuccessful.");
+                alert.setHeaderText("Loan was successful.");
             }
         }
 
@@ -230,7 +230,7 @@ public class UserScene extends Scene implements Initializable {
 
     // Event handler for the search button
     @FXML
-    public void handleSearch() throws SQLException, IOException {
+    public void handleSearch() {
         // Retrieves search criteria
         String title = searchField.getText();
         String author = searchFieldAuthor.getText();
@@ -260,12 +260,30 @@ public class UserScene extends Scene implements Initializable {
     }
 
     // Event handler for the logout button
-    public void handleLogout() throws IOException {
-        // Load Login Scene
-        FXMLLoader newLoader = loadScene(stage, "/com/library_database/library_app/login_scene.fxml",
-                "Login To The Library Database");
-        LoginScene loginScene = newLoader.getController();
-        loginScene.setStage(stage);
+    public void handleLogout() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Logout Confirmation");
+        alert.setHeaderText("Logout?");
+        alert.setContentText("Are you sure you want to logout?");
+
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                // Perform logout operation here
+                System.out.println("Logout successful");
+                // Load Login Scene
+                FXMLLoader newLoader;
+                try {
+                    newLoader = loadScene(stage, "/com/library_database/library_app/login_scene.fxml",
+                            "Login To The Library Database");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                LoginScene loginScene = newLoader.getController();
+                loginScene.setStage(stage);
+            }
+        });
+
     }
 
     // Initialize the user controller with the account and populate the table views

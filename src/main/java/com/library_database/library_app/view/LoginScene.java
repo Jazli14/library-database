@@ -1,5 +1,7 @@
 package com.library_database.library_app.view;
+import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 import com.library_database.library_app.controller.*;
@@ -46,7 +48,7 @@ public class LoginScene implements Initializable {
         this.stage = stage;
     }
 
-    public LoginScene(){
+    public LoginScene() throws SQLException, IOException {
         auth = new Authenticator();
     }
 
@@ -71,7 +73,7 @@ public class LoginScene implements Initializable {
                 if (loginSuccess == null){ // Checks if login was successful
                     // Load User Scene
                     FXMLLoader newLoader = Scene.loadScene(stage, "/com/library_database/library_app/user_scene.fxml",
-                            "User view");
+                            "User Access");
                     UserScene userScene = newLoader.getController();
                     userScene.setStage(stage);
                     userScene.initializeController(auth.getAccList(), username);
@@ -90,7 +92,7 @@ public class LoginScene implements Initializable {
                 if (loginSuccess==null){ // Checks if login was successful
                     // Load Admin Scene
                     FXMLLoader newLoader = Scene.loadScene(stage, "/com/library_database/library_app/admin_scene.fxml",
-                            "Admin view");
+                            "Admin Access");
                     AdminScene adminScene = newLoader.getController();
                     adminScene.setStage(stage);
                     adminScene.initializeAdminController(auth.getAccList(), username);

@@ -9,8 +9,10 @@ import java.util.Objects;
 
 public class UserController extends MasterController {
     private User client;
-    public UserController(){
+    public UserController() throws SQLException, IOException {
+        super();
         library = new Library(this);
+
     }
 
     // Process borrow operation
@@ -46,9 +48,9 @@ public class UserController extends MasterController {
         }
     }
 
-    // Process the search through
+    // Process the search through parent class
     public boolean processSearch(String title, String author, boolean minOrMax, double rating, String lengthRange,
-                              Integer year, boolean isUnavailable) throws SQLException, IOException {
+                              Integer year, boolean isUnavailable) {
         int minRange;
         int maxRange;
         if (lengthRange != null) { // Check if the page length range is null
@@ -83,19 +85,10 @@ public class UserController extends MasterController {
         return searchBooks(title, author, minOrMax, rating, minRange, maxRange, intYear, isUnavailable);
     }
 
-    // Update SQL database book table when it is returned or loaned out
-    public void updateBookStatus(int bookID, boolean status) {
-        try (Connection connection = establishConnection()) {
-            String updateQuery = "UPDATE books SET ready = ? WHERE book_id = ?";
 
-            try (PreparedStatement statement = connection.prepareStatement(updateQuery)) {
-                statement.setBoolean(1, status);
-                statement.setInt(2, bookID);
-                statement.executeUpdate();
-            }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-        }
+    // Call DatabaseManager to update SQL database book table when it is returned or loaned out
+    public void updateBookStatus(int bookID, boolean status) {
+        DatabaseManager.changeBookStatus(bookID, status);
     }
 
     // Initialize the account of the controller and populate the library
