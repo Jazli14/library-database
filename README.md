@@ -17,6 +17,8 @@ The project uses an MVC (Model-View-Controller) architectural pattern to organiz
 ## Login System
 The program offers two ways to interact with the database, one as a regular user and another as an admin. So we implemented a login and registration system to accommodate this, where they can either choose to select “User” or “Admin” by switching the tab where they provide a username and password. If they do not have an account they can press register to create an account or directly login. These accounts are also stored on the database where the admin can view them.
 
+![image](/resources/login_interface.png)
+
 ## User Account Interface
 Once the user logs in, they are greeted with an interface that shows books the user can loan out with a search bar. It will also feature a tab that allows them to see any current loans they have.
 
