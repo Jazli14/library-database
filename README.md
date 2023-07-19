@@ -20,8 +20,12 @@ The program offers two ways to interact with the database, one as a regular user
 ## User Account Interface
 Once the user logs in, they are greeted with an interface that shows books the user can loan out with a search bar. It will also feature a tab that allows them to see any current loans they have.
 
+![image](/resources/user_interface.png)
+
 ## Admin Account Interface
 The admin will log in to be greeted to the same interface but with extra options. It is allowed three different tabs instead, the book table, loans table but as well as access to an accounts table. They will also have access to hidden fields in an entry such as the “book ID” or the “loan ID”.
+
+![image](/resources/admin_interface.png)
 
 ## Tables and Search
 
