@@ -17,6 +17,7 @@ To launch the application you can download the latest release and run the class 
 
 Or you can download this executable .jar file: [Download Executable](https://drive.google.com/uc?export=download&id=1zsC3LNeb2YvJrFUvYU96lp20uf-7NjB2) 
 
+*If the application won't launch, use Java SE Version 20*
 
 ## Creating the Database
 We used an online server that hosted a **PostgreSQL** database called *ElephantSQL* which allowed us to create a system where all Users interacted with the same database. 
