@@ -11,7 +11,7 @@ This project is an attempt to make an app featuring a system that allows Users t
 7. [Tables and Search](#tables-and-search)
 
 
-# How to Launch the Application
+## How to Launch the Application
 
 To launch the application you can download the latest release and run the class LibraryApp through your IDE such as IntelliJ IDEA.
 
