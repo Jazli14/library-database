@@ -21,7 +21,9 @@ Or you can download this executable .jar file: [Download Executable](https://dri
 ## Creating the Database
 We used an online server that hosted a **PostgreSQL** database called *ElephantSQL* which allowed us to create a system where all Users interacted with the same database. 
 
-We used the JDBC API to access the database through Java with the given database connection credentials.
+We used the JDBC API to access the database through Java with the given database connection credentials. 
+
+When the user invokes a request to the database, it will instantly update in real time to allow consistency when the user reopens the application.
 
 ## Cleaning and uploading a dataset of books
 Once the data is gathered, it needs to be put through preprocessing before the model is trained.
